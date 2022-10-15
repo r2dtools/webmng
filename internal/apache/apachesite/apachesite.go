@@ -1,4 +1,4 @@
-package apache
+package apachesite
 
 import (
 	"fmt"

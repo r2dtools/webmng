@@ -1,4 +1,4 @@
-package apache
+package apachectl
 
 import (
 	"errors"
