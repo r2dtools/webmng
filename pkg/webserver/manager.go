@@ -2,6 +2,11 @@ package webserver
 
 import "github.com/r2dtools/webmng/pkg/logger"
 
+const (
+	Apache = "apache"
+	Nginx  = "nginx"
+)
+
 type WebServerManagerInterface interface {
 	GetHosts() ([]HostInterface, error)
 	GetHostsByServerName(serverName string) ([]HostInterface, error)
