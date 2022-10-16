@@ -14,6 +14,7 @@ const (
 )
 
 var serverRootPaths = []string{"/etc/httpd", "/etc/apache2"}
+var configFiles = []string{"apache2.conf", "httpd.conf", "conf/httpd.conf"}
 
 type ApacheManager struct {
 	apacheCtl     *apachectl.ApacheCtl

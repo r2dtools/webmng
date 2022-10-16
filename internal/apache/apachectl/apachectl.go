@@ -33,14 +33,14 @@ func (a *ApacheCtl) ParseIncludes() ([]string, error) {
 	return a.parseCmdOutput(params, `\(.*\) (.*)`, 1)
 }
 
-// ParseModules returns a map of the defined variables.
+// ParseModules return the list of loaded module names.
 func (a *ApacheCtl) ParseModules() ([]string, error) {
 	params := []string{"-t", "-D", "DUMP_MODULES"}
 
 	return a.parseCmdOutput(params, `(.*)_module`, 1)
 }
 
-// ParseDefines return the list of loaded module names.
+// ParseDefines returns a map of the defined variables.
 func (a *ApacheCtl) ParseDefines() (map[string]string, error) {
 	params := []string{"-t", "-D", "DUMP_RUN_CFG"}
 	items, err := a.parseCmdOutput(params, `Define: ([^ \n]*)`, 1)
