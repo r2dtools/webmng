@@ -364,7 +364,7 @@ func (p *Parser) addModule(name string) {
 	}
 }
 
-func GetParser(apachectl *apachectl.ApacheCtl, version, serverRoot, hostRoot, hostFiles string) (*Parser, error) {
+func GetParser(apachectl *apachectl.ApacheCtl, lensModule, serverRoot, hostRoot, hostFiles string) (*Parser, error) {
 	serverRoot, err := webserver.GetServerRootPath(serverRoot, serverRootPaths)
 	if err != nil {
 		return nil, err
@@ -396,8 +396,9 @@ func GetParser(apachectl *apachectl.ApacheCtl, version, serverRoot, hostRoot, ho
 			ServerRoot:    serverRoot,
 			ConfigRoot:    configRoot,
 			HostRoot:      hostRoot,
-			Version:       version,
 			ExistingPaths: make(map[string][]string),
+			LoadedPaths:   make(map[string][]string),
+			LensModule:    lensModule,
 		},
 		apachectl:    apachectl,
 		configListen: configListen,

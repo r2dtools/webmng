@@ -54,13 +54,5 @@ func (s *ApacheSite) execCmd(command string, params []string) ([]byte, error) {
 }
 
 func GetApacheSite(ensiteBin, dissiteBin string) *ApacheSite {
-	if ensiteBin == "" {
-		ensiteBin = "a2ensite"
-	}
-
-	if dissiteBin == "" {
-		dissiteBin = "a2dissite"
-	}
-
 	return &ApacheSite{ensiteBin: ensiteBin, dissiteBin: dissiteBin}
 }

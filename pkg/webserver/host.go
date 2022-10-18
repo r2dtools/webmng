@@ -10,13 +10,13 @@ import (
 type HostInterface interface {
 	GetDocRoot() string
 	GetServerName() string
-	GetServerNames() ([]string, error)
 	GetAliases() []string
 	GetAddresses() map[string]host.Address
 	GetAddressesString(hostOnly bool) string
 	IsSslEnabled() bool
 	IsEnabled() bool
 	GetConfigName() string
+	GetConfigPath() string
 }
 
 type Host struct {
@@ -26,8 +26,13 @@ type Host struct {
 	AugPath string
 	Addresses map[string]host.Address
 	Aliases   []string
+	ModMacro,
 	Ssl,
 	Enabled bool
+}
+
+func (h *Host) GetServerName() string {
+	return h.ServerName
 }
 
 func (h *Host) GetDocRoot() string {
@@ -53,6 +58,10 @@ func (h *Host) GetAliases() []string {
 // GetConfigName returns config name of a host
 func (h *Host) GetConfigName() string {
 	return filepath.Base(h.FilePath)
+}
+
+func (h *Host) GetConfigPath() string {
+	return h.FilePath
 }
 
 // GetAddressesString return address as a string: "172.10.52.2:80 172.10.52.3:8080"

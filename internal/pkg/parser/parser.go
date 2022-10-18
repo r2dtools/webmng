@@ -15,8 +15,7 @@ type BaseParser struct {
 	LensModule,
 	ServerRoot,
 	ConfigRoot,
-	HostRoot,
-	Version string
+	HostRoot string
 	LoadedPaths   map[string][]string
 	ExistingPaths map[string][]string
 }
