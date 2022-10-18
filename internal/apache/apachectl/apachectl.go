@@ -108,13 +108,11 @@ func (a *ApacheCtl) Restart() error {
 
 func (a *ApacheCtl) parseCmdOutput(params []string, regexpStr string, captureGroup uint) ([]string, error) {
 	output, err := a.execCmd(params)
-
 	if err != nil {
 		return nil, err
 	}
 
 	reg, err := regexp.Compile(regexpStr)
-
 	if err != nil {
 		return nil, err
 	}
@@ -132,9 +130,8 @@ func (a *ApacheCtl) parseCmdOutput(params []string, regexpStr string, captureGro
 func (a *ApacheCtl) execCmd(params []string) ([]byte, error) {
 	cmd := exec.Command(a.binPath, params...)
 	output, err := cmd.Output()
-
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not execute apache2ctl command: %v", err)
 	}
 
 	return output, nil
