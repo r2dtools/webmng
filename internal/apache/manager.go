@@ -7,6 +7,7 @@ import (
 
 	"github.com/r2dtools/webmng/internal/apache/apachectl"
 	"github.com/r2dtools/webmng/internal/apache/apachesite"
+	apacheoptions "github.com/r2dtools/webmng/internal/apache/options"
 	"github.com/r2dtools/webmng/pkg/aug"
 	"github.com/r2dtools/webmng/pkg/logger"
 	"github.com/r2dtools/webmng/pkg/utils"
@@ -277,8 +278,27 @@ func (m *ApacheManager) getDocumentRoot(path string) (string, error) {
 	return docRoot, nil
 }
 
-func GetApacheManager(apachectl *apachectl.ApacheCtl, apachesite *apachesite.ApacheSite, parser *Parser) (*ApacheManager, error) {
-	version, err := apachectl.GetVersion()
+func GetApacheManager(params map[string]string) (*ApacheManager, error) {
+	options := apacheoptions.GetOptions(params)
+
+	aCtl, err := apachectl.GetApacheCtl(options.Get(apacheoptions.ApacheCtl))
+	if err != nil {
+		return nil, err
+	}
+
+	aSite := apachesite.GetApacheSite(options.Get(apacheoptions.ApacheEnsite), options.Get(apacheoptions.ApacheDissite))
+	parser, err := GetParser(
+		aCtl,
+		"Httpd",
+		options.Get(apacheoptions.ServerRoot),
+		options.Get(apacheoptions.HostRoot),
+		options.Get(apacheoptions.HostFiles),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	version, err := aCtl.GetVersion()
 	if err != nil {
 		return nil, err
 	}
@@ -293,13 +313,13 @@ func GetApacheManager(apachectl *apachectl.ApacheCtl, apachesite *apachesite.Apa
 	}
 
 	// Test apache configuration before creating manager
-	if err = apachectl.TestConfiguration(); err != nil {
+	if err = aCtl.TestConfiguration(); err != nil {
 		return nil, err
 	}
 
 	manager := ApacheManager{
-		apachectl:     apachectl,
-		apachesite:    apachesite,
+		apachectl:     aCtl,
+		apachesite:    aSite,
 		parser:        parser,
 		logger:        logger.NilLogger{},
 		apacheVersion: version,

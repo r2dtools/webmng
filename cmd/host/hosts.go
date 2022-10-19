@@ -1,7 +1,7 @@
 package host
 
 import (
-	"fmt"
+	"encoding/json"
 
 	"github.com/r2dtools/webmng/cmd/webserver"
 	"github.com/spf13/cobra"
@@ -22,8 +22,14 @@ var HostListCmd = &cobra.Command{
 			return err
 		}
 
-		for _, host := range hosts {
-			fmt.Println(host.GetServerName())
+		data, err := json.MarshalIndent(hosts, "", " ")
+		if err != nil {
+			return err
+		}
+
+		_, err = cmd.OutOrStdout().Write(data)
+		if err != nil {
+			return err
 		}
 
 		return nil

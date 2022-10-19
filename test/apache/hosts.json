@@ -14,8 +14,7 @@
         "Aliases":["www.example5.com"],
         "Ssl":false,
         "Enabled":true,
-        "ModMacro":false,
-        "Ancestor":null
+        "ModMacro":false
     },
     {
         "FilePath":"/etc/apache2/sites-enabled/example3.com.conf",
@@ -32,8 +31,7 @@
         "Aliases":["www.example3.com"],
         "Ssl":false,
         "Enabled":true,
-        "ModMacro":false,
-        "Ancestor":null
+        "ModMacro":false
     },
     {
         "FilePath":"/etc/apache2/sites-enabled/example4-ssl.com.conf",
@@ -50,8 +48,7 @@
         "Aliases":["www.example4.com"],
         "Ssl":false,
         "Enabled":true,
-        "ModMacro":false,
-        "Ancestor":null
+        "ModMacro":false
     },
     {
         "FilePath":"/etc/apache2/sites-enabled/example4-ssl.com.conf",
@@ -68,8 +65,7 @@
         "Aliases":["www.example4.com"],
         "Ssl":false,
         "Enabled":true,
-        "ModMacro":false,
-        "Ancestor":null
+        "ModMacro":false
     },
     {
         "FilePath":"/etc/apache2/sites-enabled/example4-ssl.com.conf",
@@ -86,8 +82,7 @@
         "Aliases":["www.example4.com"],
         "Ssl":true,
         "Enabled":true,
-        "ModMacro":false,
-        "Ancestor":null
+        "ModMacro":false
     },
     {
         "FilePath":"/etc/apache2/sites-enabled/example4-ssl.com.conf",
@@ -104,8 +99,7 @@
         "Aliases":["www.example4.com"],
         "Ssl":true,
         "Enabled":true,
-        "ModMacro":false,
-        "Ancestor":null
+        "ModMacro":false
     },
     {
         "FilePath":"/etc/apache2/sites-enabled/example-ssl.com.conf",
@@ -122,8 +116,7 @@
         "Aliases":["www.example.com"],
         "Ssl":false,
         "Enabled":true,
-        "ModMacro":false,
-        "Ancestor":null
+        "ModMacro":false
     },
     {
         "FilePath":"/etc/apache2/sites-enabled/example-ssl.com.conf",
@@ -140,8 +133,7 @@
         "Aliases":["www.example.com"],
         "Ssl":true,
         "Enabled":true,
-        "ModMacro":false,
-        "Ancestor":null
+        "ModMacro":false
     },
     {
         "FilePath":"/etc/apache2/sites-enabled/example2.com.conf",
@@ -158,8 +150,7 @@
         "Aliases":["www.example2.com"],
         "Ssl":false,
         "Enabled":true,
-        "ModMacro":false,
-        "Ancestor":null
+        "ModMacro":false
     },
     {
         "FilePath":"/etc/apache2/sites-enabled/example3-ssl.com.conf",
@@ -176,7 +167,6 @@
         "Aliases":["www.example3.com"],
         "Ssl":true,
         "Enabled":true,
-        "ModMacro":false,
-        "Ancestor":null
+        "ModMacro":false
     }
 ]

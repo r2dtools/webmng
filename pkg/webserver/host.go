@@ -26,9 +26,9 @@ type Host struct {
 	AugPath string
 	Addresses map[string]host.Address
 	Aliases   []string
-	ModMacro,
 	Ssl,
-	Enabled bool
+	Enabled,
+	ModMacro bool
 }
 
 func (h *Host) GetServerName() string {

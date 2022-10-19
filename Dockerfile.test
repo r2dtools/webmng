@@ -1,0 +1,24 @@
+FROM golang:latest
+
+RUN apt update && apt install -y \
+    apache2 \
+    augeas-tools \
+    libaugeas-dev
+RUN a2enmod ssl
+
+ARG webmngDir=/opt/webmng
+ARG apacheAvailableSitesDir=/etc/apache2/sites-available
+
+RUN mkdir $webmngDir
+VOLUME ${webmngDir}
+WORKDIR  $webmngDir
+
+COPY ./test/apache/example2.com.conf ${apacheAvailableSitesDir}
+COPY ./test/apache/example-ssl.com.conf ${apacheAvailableSitesDir}
+COPY ./test/apache/example3.com.conf ${apacheAvailableSitesDir}
+COPY ./test/apache/example3-ssl.com.conf ${apacheAvailableSitesDir}
+COPY ./test/apache/example4-ssl.com.conf ${apacheAvailableSitesDir}
+COPY ./test/apache/example5.com.conf ${apacheAvailableSitesDir}
+RUN a2ensite example3.com.conf && a2ensite example3-ssl.com.conf && a2ensite example2.com.conf && a2ensite example-ssl.com.conf && a2ensite example4-ssl.com.conf && a2ensite example5.com.conf && a2dissite 000-default.conf
+
+ENTRYPOINT ["/bin/sh", "./scripts/testcmd.sh"]

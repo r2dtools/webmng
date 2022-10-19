@@ -20,6 +20,9 @@ const (
 )
 
 func GetOptions(params map[string]string) options.Options {
+	if params == nil {
+		params = make(map[string]string)
+	}
 	return options.Options{Defaults: GetDefaults(), Params: params}
 }
 

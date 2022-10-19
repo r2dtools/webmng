@@ -27,5 +27,8 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
-    - name: Run unit tests
+    - name: Build test image
+      run: make build_test_image
+
+    - name: Run tests
       run: make test
