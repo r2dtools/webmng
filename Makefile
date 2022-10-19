@@ -10,4 +10,4 @@ build_test_image:
 	docker build --no-cache --tag="webmng-test" -f Dockerfile.test ./
 
 clean:
-	$(shell ./scripts/clean.sh)
+	$(shell ./scripts/testclean.sh)

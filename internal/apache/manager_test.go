@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"regexp"
 	"testing"
 
+	ws "github.com/r2dtools/webmng/pkg/webserver"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,10 +19,13 @@ func TestGetHosts(t *testing.T) {
 	hosts, err := webServerManager.GetHosts()
 	assert.Nilf(t, err, "could not get hosts: %v", err)
 
-	hostsJSON, err := json.Marshal(hosts)
-	assert.Nilf(t, err, "could not marshal hosts: %v", err)
-	expectedHostsJSON := getHostsJSON(t)
-	assert.Equal(t, expectedHostsJSON, string(hostsJSON), "invalid hosts")
+	expectedHosts := getHostsFromJSON(t)
+	for _, host := range hosts {
+		apacheHost := host.(*ws.Host)
+		expectedHost, ok := expectedHosts[apacheHost.AugPath]
+		assert.Equal(t, true, ok, "could not find host in map")
+		assert.Equal(t, expectedHost, apacheHost, "invalid host")
+	}
 }
 
 func TestGetHostNames(t *testing.T) {
@@ -48,16 +51,20 @@ func getWebServerManager(t *testing.T) *ApacheManager {
 	return webServerManager
 }
 
-func getHostsJSON(t *testing.T) string {
+func getHostsFromJSON(t *testing.T) map[string]*ws.Host {
 	hostsPath := apacheDir + "/hosts.json"
 	assert.FileExists(t, hostsPath, "could not open hosts file")
 	data, err := os.ReadFile(hostsPath)
 	assert.Nilf(t, err, "could not read hosts file: %v", err)
 
-	return prepareStringToCompare(string(data))
-}
+	var hosts []*ws.Host
+	err = json.Unmarshal(data, &hosts)
+	assert.Nilf(t, err, "could not decode hosts: %v", err)
 
-func prepareStringToCompare(str string) string {
-	re := regexp.MustCompile(`[\r\n\s]`)
-	return re.ReplaceAllString(string(str), "")
+	hostsMap := make(map[string]*ws.Host)
+	for _, host := range hosts {
+		hostsMap[host.AugPath] = host
+	}
+
+	return hostsMap
 }

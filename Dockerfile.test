@@ -21,4 +21,4 @@ COPY ./test/apache/example4-ssl.com.conf ${apacheAvailableSitesDir}
 COPY ./test/apache/example5.com.conf ${apacheAvailableSitesDir}
 RUN a2ensite example3.com.conf && a2ensite example3-ssl.com.conf && a2ensite example2.com.conf && a2ensite example-ssl.com.conf && a2ensite example4-ssl.com.conf && a2ensite example5.com.conf && a2dissite 000-default.conf
 
-ENTRYPOINT ["/bin/sh", "./scripts/testcmd.sh"]
+ENTRYPOINT ["/bin/sh", "./scripts/testrun.sh"]
