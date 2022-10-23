@@ -9,14 +9,14 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	parser, err := GetParser("../../test/nginx/nginx-simple.conf")
+	parser, err := GetParser("../../test/nginx/nginx.conf")
 	assert.Nilf(t, err, "could not create parser: %v", err)
 
 	parsedConfigs, err := parser.Parse()
 	assert.Nilf(t, err, "could not parse config: %v", err)
 
 	expectedData := make(map[string]*Config, 0)
-	data, err := os.ReadFile("../../test/nginx/nginx-simple.conf.json")
+	data, err := os.ReadFile("../../test/nginx/nginx.conf.json")
 	assert.Nilf(t, err, "could not read file with expected data: %v", err)
 
 	err = json.Unmarshal(data, &expectedData)

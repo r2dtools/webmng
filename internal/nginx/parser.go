@@ -10,22 +10,28 @@ import (
 type Value struct {
 	Pos lexer.Position
 
-	String *string `@Value`
+	Expression *string `@Expression | @String`
 }
 
 type Block struct {
 	Pos lexer.Position
 
-	Parameters []*Value `@@*`
-	Entries    []*Entry `"{" @@* "}"`
+	Parameters []*Value      `@@*`
+	Content    *BlockContent `"{" @@ "}"`
+}
+
+type BlockContent struct {
+	Pos lexer.Position
+
+	Entries []*Entry `@@*`
 }
 
 type Entry struct {
 	Pos lexer.Position
 
-	Key    string   `@Ident`
-	Values []*Value `( @@+";"`
-	Block  *Block   `| @@)`
+	Identifier string   `@Ident`
+	Values     []*Value `( @@+";"`
+	Block      *Block   `| @@)`
 }
 
 type Config struct {
@@ -63,22 +69,25 @@ func GetParser(configRoot string) (*Parser, error) {
 	def := lexer.MustStateful(lexer.Rules{
 		"Root": {
 			{`whitespace`, `\s+`, nil},
+			{`comment`, `#.*`, nil},
 			{"BlockEnd", `}`, nil},
 			{`Ident`, `\w+`, lexer.Push("IdentParse")},
 		},
 		"IdentParse": {
 			{`whitespace`, `\s+`, nil},
-			{"Value", `[^;{}\s]+`, nil},
+			{`comment`, `#.*`, nil},
+			{`String`, `"[\"]*"`, nil},
 			{"Semicolon", `;`, lexer.Pop()},
 			{"BlockStart", `{`, lexer.Pop()},
 			{"BlockEnd", `}`, lexer.Pop()},
-			{`String`, `"[\"]"`, nil},
+			{"Expression", `[^;{}#\s]+`, nil},
 		},
 	})
 
 	participleParser, err := participle.Build[Config](
 		participle.Lexer(def),
 		participle.Unquote(),
+		participle.UseLookahead(50),
 	)
 	if err != nil {
 		return nil, err
