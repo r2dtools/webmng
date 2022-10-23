@@ -10,7 +10,7 @@ import (
 type Value struct {
 	Pos lexer.Position
 
-	Expression *string `@Expression | @String`
+	Expression *string `@Expression | @String | @StringSingleQuoted`
 }
 
 type Block struct {
@@ -76,7 +76,8 @@ func GetParser(configRoot string) (*Parser, error) {
 		"IdentParse": {
 			{`whitespace`, `\s+`, nil},
 			{`comment`, `#.*`, nil},
-			{`String`, `"[\"]*"`, nil},
+			{`String`, `"[^"]*"`, nil},
+			{`StringSingleQuoted`, `'[^']*'`, nil},
 			{"Semicolon", `;`, lexer.Pop()},
 			{"BlockStart", `{`, lexer.Pop()},
 			{"BlockEnd", `}`, lexer.Pop()},
@@ -86,7 +87,6 @@ func GetParser(configRoot string) (*Parser, error) {
 
 	participleParser, err := participle.Build[Config](
 		participle.Lexer(def),
-		participle.Unquote(),
 		participle.UseLookahead(50),
 	)
 	if err != nil {

@@ -804,6 +804,45 @@
                            }
                         ],
                         "Block":null
+                     },
+                     {
+                        "Pos":{
+                           "Filename":"../../test/nginx/nginx.conf",
+                           "Offset":1784,
+                           "Line":58,
+                           "Column":5
+                        },
+                        "Identifier":"add_header",
+                        "Values":[
+                           {
+                              "Pos":{
+                                 "Filename":"../../test/nginx/nginx.conf",
+                                 "Offset":1795,
+                                 "Line":58,
+                                 "Column":16
+                              },
+                              "Expression":"Strict-Transport-Security"
+                           },
+                           {
+                              "Pos":{
+                                 "Filename":"../../test/nginx/nginx.conf",
+                                 "Offset":1821,
+                                 "Line":58,
+                                 "Column":42
+                              },
+                              "Expression":"\"max-age=31536000; includeSubDomains\""
+                           },
+                           {
+                              "Pos":{
+                                 "Filename":"../../test/nginx/nginx.conf",
+                                 "Offset":1859,
+                                 "Line":58,
+                                 "Column":80
+                              },
+                              "Expression":"always"
+                           }
+                        ],
+                        "Block":null
                      }
                   ]
                }
