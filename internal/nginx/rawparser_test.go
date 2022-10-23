@@ -9,10 +9,10 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	parser, err := GetParser()
+	parser, err := GetRawParser()
 	assert.Nilf(t, err, "could not create parser: %v", err)
 
-	parsedConfigs, err := parser.Parse("../../test/nginx/nginx.conf")
+	parsedConfig, err := parser.Parse("../../test/nginx/nginx.conf")
 	assert.Nilf(t, err, "could not parse config: %v", err)
 
 	expectedData := &Config{}
@@ -22,5 +22,5 @@ func TestParse(t *testing.T) {
 	err = json.Unmarshal(data, expectedData)
 	assert.Nilf(t, err, "could not decode expected data: %v", err)
 
-	assert.Equal(t, expectedData, parsedConfigs, "parsed data is invalid")
+	assert.Equal(t, expectedData, parsedConfig, "parsed data is invalid")
 }

@@ -40,11 +40,11 @@ type Config struct {
 	Entries []*Entry `@@*`
 }
 
-type Parser struct {
+type RawParser struct {
 	participleParser *participle.Parser[Config]
 }
 
-func (p *Parser) Parse(configPath string) (*Config, error) {
+func (p *RawParser) Parse(configPath string) (*Config, error) {
 	configFile, err := os.Open(configPath)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (p *Parser) Parse(configPath string) (*Config, error) {
 	return config, nil
 }
 
-func GetParser() (*Parser, error) {
+func GetRawParser() (*RawParser, error) {
 	def := lexer.MustStateful(lexer.Rules{
 		"Root": {
 			{`whitespace`, `\s+`, nil},
@@ -85,7 +85,7 @@ func GetParser() (*Parser, error) {
 		return nil, err
 	}
 
-	parser := Parser{
+	parser := RawParser{
 		participleParser: participleParser,
 	}
 
