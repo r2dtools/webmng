@@ -41,13 +41,11 @@ type Config struct {
 }
 
 type Parser struct {
-	configRoot       string
 	participleParser *participle.Parser[Config]
-	parsedConfigs    map[string]*Config
 }
 
-func (p *Parser) Parse() (map[string]*Config, error) {
-	configFile, err := os.Open(p.configRoot)
+func (p *Parser) Parse(configPath string) (*Config, error) {
+	configFile, err := os.Open(configPath)
 	if err != nil {
 		return nil, err
 	}
@@ -56,16 +54,10 @@ func (p *Parser) Parse() (map[string]*Config, error) {
 		return nil, err
 	}
 
-	p.parsedConfigs[p.configRoot] = config
-
-	return p.parsedConfigs, nil
+	return config, nil
 }
 
-func (p *Parser) parseRecursively(configPath string) error {
-	return nil
-}
-
-func GetParser(configRoot string) (*Parser, error) {
+func GetParser() (*Parser, error) {
 	def := lexer.MustStateful(lexer.Rules{
 		"Root": {
 			{`whitespace`, `\s+`, nil},
@@ -94,9 +86,7 @@ func GetParser(configRoot string) (*Parser, error) {
 	}
 
 	parser := Parser{
-		configRoot:       configRoot,
 		participleParser: participleParser,
-		parsedConfigs:    make(map[string]*Config),
 	}
 
 	return &parser, nil
