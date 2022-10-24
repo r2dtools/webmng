@@ -28,7 +28,13 @@ type ApacheManager struct {
 	parser        *Parser
 	logger        logger.LoggerInterface
 	apacheVersion string
-	hosts         []webserver.HostInterface
+	hosts         []*apacheHost
+}
+
+type apacheHost struct {
+	webserver.Host
+
+	AugPath string
 }
 
 type hsotNames struct {
@@ -36,14 +42,38 @@ type hsotNames struct {
 	ServerAliases []string
 }
 
-func (m *ApacheManager) GetHosts() ([]webserver.HostInterface, error) {
-	if m.hosts != nil {
-		return m.hosts, nil
+func (m *ApacheManager) GetHosts() ([]*webserver.Host, error) {
+	if m.hosts == nil {
+		m.hosts = m.getHosts()
 	}
 
+	var hosts []*webserver.Host
+
+	for _, host := range m.hosts {
+		hosts = append(hosts, &host.Host)
+	}
+
+	return hosts, nil
+}
+
+// CheckConfiguration checks if apache configuration is correct
+func (m *ApacheManager) CheckConfiguration() bool {
+	if err := m.apachectl.TestConfiguration(); err != nil {
+		return false
+	}
+
+	return true
+}
+
+// RestartWebServer restarts apache web server
+func (m *ApacheManager) Restart() error {
+	return m.apachectl.Restart()
+}
+
+func (m *ApacheManager) getHosts() []*apacheHost {
 	filePaths := make(map[string]string)
 	internalPaths := make(map[string]map[string]bool)
-	var hosts []*webserver.Host
+	var hosts []*apacheHost
 
 	for hostPath := range m.parser.LoadedPaths {
 		paths, err := m.parser.Augeas.Match(fmt.Sprintf("/files%s//*[label()=~regexp('VirtualHost', 'i')]", hostPath))
@@ -92,7 +122,7 @@ func (m *ApacheManager) GetHosts() ([]webserver.HostInterface, error) {
 				// Prefer "real" host paths instead of symlinked ones
 				// for example: sites-enabled/vh.conf -> sites-available/vh.conf
 				// remove old (most likely) symlinked one
-				var nHosts []*webserver.Host
+				var nHosts []*apacheHost
 
 				for _, h := range hosts {
 					if h.FilePath == filePaths[realPath] {
@@ -114,28 +144,10 @@ func (m *ApacheManager) GetHosts() ([]webserver.HostInterface, error) {
 		}
 	}
 
-	for _, host := range hosts {
-		m.hosts = append(m.hosts, webserver.HostInterface(host))
-	}
-
-	return m.hosts, nil
+	return hosts
 }
 
-// CheckConfiguration checks if apache configuration is correct
-func (m *ApacheManager) CheckConfiguration() bool {
-	if err := m.apachectl.TestConfiguration(); err != nil {
-		return false
-	}
-
-	return true
-}
-
-// RestartWebServer restarts apache web server
-func (m *ApacheManager) Restart() error {
-	return m.apachectl.Restart()
-}
-
-func (m *ApacheManager) createHost(path string) (*webserver.Host, error) {
+func (m *ApacheManager) createHost(path string) (*apacheHost, error) {
 	args, err := m.parser.Augeas.Match(fmt.Sprintf("%s/arg", path))
 	if err != nil {
 		return nil, err
@@ -190,21 +202,23 @@ func (m *ApacheManager) createHost(path string) (*webserver.Host, error) {
 		return nil, err
 	}
 
-	host := &webserver.Host{
-		FilePath:  filename,
-		AugPath:   path,
-		DocRoot:   docRoot,
-		Ssl:       ssl,
-		ModMacro:  macro,
-		Enabled:   hostEnabled,
-		Addresses: addrs,
+	host := &apacheHost{
+		Host: webserver.Host{
+			FilePath:  filename,
+			DocRoot:   docRoot,
+			Ssl:       ssl,
+			ModMacro:  macro,
+			Enabled:   hostEnabled,
+			Addresses: addrs,
+		},
+		AugPath: path,
 	}
 	m.addServerNames(host)
 
 	return host, err
 }
 
-func (m *ApacheManager) addServerNames(host *webserver.Host) error {
+func (m *ApacheManager) addServerNames(host *apacheHost) error {
 	hostNames, err := m.getHostNames(host.AugPath)
 	if err != nil {
 		return err
