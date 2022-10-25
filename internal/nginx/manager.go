@@ -1,16 +1,23 @@
 package nginx
 
 import (
+	"github.com/r2dtools/webmng/internal/nginx/nginxcli"
+	nginxoptions "github.com/r2dtools/webmng/internal/nginx/options"
 	"github.com/r2dtools/webmng/pkg/logger"
 	"github.com/r2dtools/webmng/pkg/webserver"
 )
 
 type NginxManager struct {
-	logger logger.LoggerInterface
+	nginxCli *nginxcli.NginxCli
+	logger   logger.LoggerInterface
 }
 
 func (m *NginxManager) GetHosts() ([]*webserver.Host, error) {
 	return nil, nil
+}
+
+func (m *NginxManager) GetVersion() (string, error) {
+	return m.nginxCli.GetVersion()
 }
 
 func (m *NginxManager) CheckConfiguration() bool {
@@ -26,8 +33,16 @@ func (m *NginxManager) SetLogger(logger logger.LoggerInterface) {
 }
 
 func GetNginxManager(params map[string]string) (*NginxManager, error) {
+	options := nginxoptions.GetOptions(params)
+
+	nginxCli, err := nginxcli.GetNginxCli(options.Get(nginxoptions.NginxBinPath))
+	if err != nil {
+		return nil, err
+	}
+
 	manager := NginxManager{
-		logger: logger.NilLogger{},
+		nginxCli: nginxCli,
+		logger:   logger.NilLogger{},
 	}
 
 	return &manager, nil

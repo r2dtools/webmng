@@ -9,6 +9,7 @@ const (
 
 type WebServerManagerInterface interface {
 	GetHosts() ([]*Host, error)
+	GetVersion() (string, error)
 	// GetHostsByServerName(serverName string) ([]HostInterface, error)
 	// EnableHost(host HostInterface) error
 	// DeployCertificate(serverName, certPath, certKeyPath, chainPath, fullChainPath string) error

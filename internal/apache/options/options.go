@@ -26,7 +26,7 @@ func GetOptions(params map[string]string) options.Options {
 	return options.Options{Defaults: GetDefaults(), Params: params}
 }
 
-// GetDefaults returns ApacheConfigurator default options
+// GetDefaults returns Apache manager default options
 func GetDefaults() map[string]string {
 	defaults := make(map[string]string)
 	defaults[ServerRoot] = ""

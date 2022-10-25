@@ -14,8 +14,7 @@ type Host struct {
 	Addresses map[string]host.Address
 	Aliases   []string
 	Ssl,
-	Enabled,
-	ModMacro bool
+	Enabled bool
 }
 
 // GetConfigName returns config name of a host

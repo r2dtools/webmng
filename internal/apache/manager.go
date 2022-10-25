@@ -34,7 +34,8 @@ type ApacheManager struct {
 type apacheHost struct {
 	webserver.Host
 
-	AugPath string
+	AugPath  string
+	ModMacro bool
 }
 
 type hsotNames struct {
@@ -54,6 +55,10 @@ func (m *ApacheManager) GetHosts() ([]*webserver.Host, error) {
 	}
 
 	return hosts, nil
+}
+
+func (m *ApacheManager) GetVersion() (string, error) {
+	return m.apacheVersion, nil
 }
 
 // CheckConfiguration checks if apache configuration is correct
@@ -207,11 +212,11 @@ func (m *ApacheManager) createHost(path string) (*apacheHost, error) {
 			FilePath:  filename,
 			DocRoot:   docRoot,
 			Ssl:       ssl,
-			ModMacro:  macro,
 			Enabled:   hostEnabled,
 			Addresses: addrs,
 		},
-		AugPath: path,
+		AugPath:  path,
+		ModMacro: macro,
 	}
 	m.addServerNames(host)
 
