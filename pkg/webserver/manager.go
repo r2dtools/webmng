@@ -14,7 +14,7 @@ type WebServerManagerInterface interface {
 	// EnableHost(host HostInterface) error
 	// DeployCertificate(serverName, certPath, certKeyPath, chainPath, fullChainPath string) error
 	// EnsurePortIsListening(port string, https bool) error
-	CheckConfiguration() bool
+	CheckConfiguration() error
 	Restart() error
 	SetLogger(logger logger.LoggerInterface)
 }

@@ -1,42 +1,29 @@
 package mng
 
 import (
-	"encoding/json"
-
 	"github.com/r2dtools/webmng/cmd/flag"
 	"github.com/spf13/cobra"
 )
 
-func getHostsCmd() *cobra.Command {
+func getCheckCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:   "hosts",
-		Short: "show host list",
+		Use:   "check",
+		Short: "check webserver configuration",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var output []byte
-			var err error
-
 			code := cmd.Flag(flag.WebServerFlag).Value.String()
 			webServerManager, err := GetWebServerManager(code, nil)
 			if err != nil {
 				return err
 			}
 
-			hosts, err := webServerManager.GetHosts()
-			if err != nil {
-				return err
-			}
-
-			if isJson {
-				output, err = json.Marshal(hosts)
-			} else {
-				output, err = json.MarshalIndent(hosts, "", "    ")
-			}
+			output := "ok"
+			err = webServerManager.CheckConfiguration()
 
 			if err != nil {
-				return err
+				output = err.Error()
 			}
 
-			_, err = cmd.OutOrStdout().Write(output)
+			_, err = cmd.OutOrStdout().Write([]byte(output + "\n"))
 			if err != nil {
 				return err
 			}

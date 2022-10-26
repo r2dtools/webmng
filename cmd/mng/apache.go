@@ -20,4 +20,6 @@ var apacheCmd = &cobra.Command{
 func init() {
 	apacheCmd.AddCommand(getHostsCmd())
 	apacheCmd.AddCommand(getVersionCmd())
+	apacheCmd.AddCommand(getCheckCmd())
+	apacheCmd.AddCommand(getRestartCmd())
 }

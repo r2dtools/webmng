@@ -20,12 +20,12 @@ func (m *NginxManager) GetVersion() (string, error) {
 	return m.nginxCli.GetVersion()
 }
 
-func (m *NginxManager) CheckConfiguration() bool {
-	return false
+func (m *NginxManager) CheckConfiguration() error {
+	return m.nginxCli.TestConfiguration()
 }
 
 func (m *NginxManager) Restart() error {
-	return nil
+	return m.nginxCli.Restart()
 }
 
 func (m *NginxManager) SetLogger(logger logger.LoggerInterface) {

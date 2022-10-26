@@ -20,4 +20,6 @@ var nginxCmd = &cobra.Command{
 func init() {
 	nginxCmd.AddCommand(getHostsCmd())
 	nginxCmd.AddCommand(getVersionCmd())
+	nginxCmd.AddCommand(getCheckCmd())
+	nginxCmd.AddCommand(getRestartCmd())
 }

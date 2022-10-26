@@ -17,10 +17,18 @@ type NginxCli struct {
 }
 
 func (n *NginxCli) Restart() error {
+	if _, err := n.execCmd([]string{"-s", "reload"}); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (n *NginxCli) TestConfiguration() error {
+	if _, err := n.execCmd([]string{"-t"}); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -59,7 +67,7 @@ func (n *NginxCli) execCmd(params []string) ([]byte, error) {
 	cmd := exec.Command(n.binPath, params...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return nil, fmt.Errorf("could not execute nginx cli command: %v", err)
+		return nil, fmt.Errorf("%v: %s", err, output)
 	}
 
 	return output, nil

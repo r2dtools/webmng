@@ -62,12 +62,8 @@ func (m *ApacheManager) GetVersion() (string, error) {
 }
 
 // CheckConfiguration checks if apache configuration is correct
-func (m *ApacheManager) CheckConfiguration() bool {
-	if err := m.apachectl.TestConfiguration(); err != nil {
-		return false
-	}
-
-	return true
+func (m *ApacheManager) CheckConfiguration() error {
+	return m.apachectl.TestConfiguration()
 }
 
 // RestartWebServer restarts apache web server

@@ -91,7 +91,7 @@ func (a *ApacheCtl) GetVersion() (string, error) {
 // TestConfiguration checks the syntax of apache configuration files
 func (a *ApacheCtl) TestConfiguration() error {
 	if _, err := a.execCmd([]string{"-t"}); err != nil {
-		return fmt.Errorf("invalid apache configuration: %v", err)
+		return err
 	}
 
 	return nil
@@ -100,7 +100,7 @@ func (a *ApacheCtl) TestConfiguration() error {
 // Restart restarts apache webserver
 func (a *ApacheCtl) Restart() error {
 	if _, err := a.execCmd([]string{"-k", "restart"}); err != nil {
-		return fmt.Errorf("could not restart apache: %v", err)
+		return err
 	}
 
 	return nil
@@ -129,9 +129,9 @@ func (a *ApacheCtl) parseCmdOutput(params []string, regexpStr string, captureGro
 
 func (a *ApacheCtl) execCmd(params []string) ([]byte, error) {
 	cmd := exec.Command(a.binPath, params...)
-	output, err := cmd.Output()
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return nil, fmt.Errorf("could not execute apache2ctl command: %v", err)
+		return nil, fmt.Errorf("%v: %s", err, output)
 	}
 
 	return output, nil
