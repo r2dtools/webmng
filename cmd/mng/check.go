@@ -13,22 +13,15 @@ func getCheckCmd() *cobra.Command {
 			code := cmd.Flag(flag.WebServerFlag).Value.String()
 			webServerManager, err := GetWebServerManager(code, nil)
 			if err != nil {
-				return err
+				return writeOutput(cmd, err.Error())
 			}
 
-			output := "ok"
 			err = webServerManager.CheckConfiguration()
-
 			if err != nil {
-				output = err.Error()
+				return writeOutput(cmd, err.Error())
 			}
 
-			_, err = cmd.OutOrStdout().Write([]byte(output + "\n"))
-			if err != nil {
-				return err
-			}
-
-			return nil
+			return writelnOutput(cmd, "ok")
 		},
 	}
 

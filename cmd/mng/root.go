@@ -23,3 +23,16 @@ func init() {
 	RootCmd.AddCommand(apacheCmd)
 	RootCmd.AddCommand(nginxCmd)
 }
+
+func writeOutput(cmd *cobra.Command, output string) error {
+	_, err := cmd.OutOrStdout().Write([]byte(output))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func writelnOutput(cmd *cobra.Command, output string) error {
+	return writeOutput(cmd, output+"\n")
+}

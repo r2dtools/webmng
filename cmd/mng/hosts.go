@@ -2,9 +2,11 @@ package mng
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/r2dtools/webmng/cmd/flag"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 )
 
 func getHostsCmd() *cobra.Command {
@@ -18,30 +20,34 @@ func getHostsCmd() *cobra.Command {
 			code := cmd.Flag(flag.WebServerFlag).Value.String()
 			webServerManager, err := GetWebServerManager(code, nil)
 			if err != nil {
-				return err
+				return writeOutput(cmd, err.Error())
 			}
 
 			hosts, err := webServerManager.GetHosts()
 			if err != nil {
-				return err
+				return writeOutput(cmd, err.Error())
 			}
 
 			if isJson {
 				output, err = json.Marshal(hosts)
-			} else {
-				output, err = json.MarshalIndent(hosts, "", "    ")
+				if err != nil {
+					return writeOutput(cmd, err.Error())
+				}
+
+				return writeOutput(cmd, string(output))
 			}
 
-			if err != nil {
-				return err
+			var outputParts []string
+
+			for _, host := range hosts {
+				output, err = yaml.Marshal(host)
+				if err != nil {
+					return writeOutput(cmd, err.Error())
+				}
+				outputParts = append(outputParts, string(output))
 			}
 
-			_, err = cmd.OutOrStdout().Write(output)
-			if err != nil {
-				return err
-			}
-
-			return nil
+			return writeOutput(cmd, strings.Join(outputParts, "\n"))
 		},
 	}
 

@@ -15,28 +15,24 @@ func getVersionCmd() *cobra.Command {
 			code := cmd.Flag(flag.WebServerFlag).Value.String()
 			webServerManager, err := GetWebServerManager(code, nil)
 			if err != nil {
-				return err
+				return writeOutput(cmd, err.Error())
 			}
 
 			version, err := webServerManager.GetVersion()
 			if err != nil {
-				return err
+				return writeOutput(cmd, err.Error())
 			}
-
-			output := []byte(version + "\n")
 
 			if isJson {
-				output, err = json.Marshal(map[string]string{"version": version})
+				output, err := json.Marshal(map[string]string{"version": version})
 				if err != nil {
-					return err
+					return writeOutput(cmd, err.Error())
 				}
-			}
-			_, err = cmd.OutOrStdout().Write(output)
-			if err != nil {
-				return err
+
+				return writeOutput(cmd, string(output))
 			}
 
-			return nil
+			return writelnOutput(cmd, version)
 		},
 	}
 
