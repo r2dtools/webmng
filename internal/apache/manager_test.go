@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/r2dtools/webmng/pkg/logger"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -42,7 +43,7 @@ func TestGetDocumentRoot(t *testing.T) {
 }
 
 func getWebServerManager(t *testing.T) *ApacheManager {
-	webServerManager, err := GetApacheManager(nil)
+	webServerManager, err := GetApacheManager(nil, logger.NilLogger{})
 	assert.Nil(t, err, fmt.Sprintf("could not create apache webserver manager: %v", err))
 
 	return webServerManager

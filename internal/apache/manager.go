@@ -293,7 +293,7 @@ func (m *ApacheManager) getDocumentRoot(path string) (string, error) {
 	return docRoot, nil
 }
 
-func GetApacheManager(params map[string]string) (*ApacheManager, error) {
+func GetApacheManager(params map[string]string, logger logger.LoggerInterface) (*ApacheManager, error) {
 	options := apacheoptions.GetOptions(params)
 
 	aCtl, err := apachectl.GetApacheCtl(options.Get(apacheoptions.ApacheCtl))
@@ -336,13 +336,9 @@ func GetApacheManager(params map[string]string) (*ApacheManager, error) {
 		apachectl:     aCtl,
 		apachesite:    aSite,
 		parser:        parser,
-		logger:        logger.NilLogger{},
+		logger:        logger,
 		apacheVersion: version,
 	}
 
 	return &manager, nil
-}
-
-func (m *ApacheManager) SetLogger(logger logger.LoggerInterface) {
-	m.logger = logger
 }

@@ -1,7 +1,5 @@
 package webserver
 
-import "github.com/r2dtools/webmng/pkg/logger"
-
 const (
 	Apache = "apache"
 	Nginx  = "nginx"
@@ -16,5 +14,4 @@ type WebServerManagerInterface interface {
 	// EnsurePortIsListening(port string, https bool) error
 	CheckConfiguration() error
 	Restart() error
-	SetLogger(logger logger.LoggerInterface)
 }

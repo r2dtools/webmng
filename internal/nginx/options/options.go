@@ -19,7 +19,7 @@ func GetOptions(params map[string]string) options.Options {
 // GetDefaults returns Nginx manager default options
 func GetDefaults() map[string]string {
 	defaults := make(map[string]string)
-	defaults[ServerRoot] = ""
+	defaults[ServerRoot] = "/etc/nginx"
 	defaults[NginxBinPath] = ""
 
 	return defaults

@@ -3,17 +3,24 @@ package nginx
 import (
 	"github.com/r2dtools/webmng/internal/nginx/nginxcli"
 	nginxoptions "github.com/r2dtools/webmng/internal/nginx/options"
+	"github.com/r2dtools/webmng/internal/nginx/parser"
 	"github.com/r2dtools/webmng/pkg/logger"
 	"github.com/r2dtools/webmng/pkg/webserver"
 )
 
 type NginxManager struct {
 	nginxCli *nginxcli.NginxCli
+	parser   *parser.Parser
 	logger   logger.LoggerInterface
 }
 
 func (m *NginxManager) GetHosts() ([]*webserver.Host, error) {
-	return nil, nil
+	hosts, err := m.parser.GetHosts()
+	if err != nil {
+		return nil, err
+	}
+
+	return hosts, nil
 }
 
 func (m *NginxManager) GetVersion() (string, error) {
@@ -28,11 +35,7 @@ func (m *NginxManager) Restart() error {
 	return m.nginxCli.Restart()
 }
 
-func (m *NginxManager) SetLogger(logger logger.LoggerInterface) {
-	m.logger = logger
-}
-
-func GetNginxManager(params map[string]string) (*NginxManager, error) {
+func GetNginxManager(params map[string]string, logger logger.LoggerInterface) (*NginxManager, error) {
 	options := nginxoptions.GetOptions(params)
 
 	nginxCli, err := nginxcli.GetNginxCli(options.Get(nginxoptions.NginxBinPath))
@@ -40,9 +43,15 @@ func GetNginxManager(params map[string]string) (*NginxManager, error) {
 		return nil, err
 	}
 
+	parser, err := parser.GetParser(options.Get(nginxoptions.ServerRoot), logger)
+	if err != nil {
+		return nil, err
+	}
+
 	manager := NginxManager{
 		nginxCli: nginxCli,
-		logger:   logger.NilLogger{},
+		parser:   parser,
+		logger:   logger,
 	}
 
 	return &manager, nil

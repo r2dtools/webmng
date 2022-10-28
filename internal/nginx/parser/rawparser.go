@@ -1,4 +1,4 @@
-package nginx
+package parser
 
 import (
 	"os"
@@ -10,7 +10,7 @@ import (
 type Value struct {
 	Pos lexer.Position
 
-	Expression *string `@Expression | @String | @StringSingleQuoted`
+	Expression string `@Expression | @String | @StringSingleQuoted`
 }
 
 type Block struct {
@@ -32,6 +32,26 @@ type Entry struct {
 	Identifier string   `@Ident`
 	Values     []*Value `( @@+";"`
 	Block      *Block   `| @@)`
+}
+
+func (e *Entry) GetFirstValueStr() string {
+	if len(e.Values) == 0 {
+		return ""
+	}
+
+	return e.Values[0].Expression
+}
+
+func (e *Entry) GetValues() []*Value {
+	values := []*Value{}
+
+	for _, value := range e.Values {
+		if value != nil {
+			values = append(values, value)
+		}
+	}
+
+	return values
 }
 
 type Config struct {

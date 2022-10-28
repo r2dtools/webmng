@@ -3,6 +3,7 @@ package host
 import (
 	"encoding/base64"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -33,10 +34,17 @@ func CreateHostAddressFromString(addrStr string) Address {
 	}
 
 	parts := strings.Split(addrStr, ":")
-	host = parts[0]
+	if len(parts) == 0 {
+		return Address{}
+	}
 
-	if len(parts) > 1 {
-		port = parts[1]
+	if _, err := strconv.Atoi(parts[0]); err == nil {
+		port = parts[0]
+	} else {
+		host = parts[0]
+		if len(parts) > 1 {
+			port = parts[1]
+		}
 	}
 
 	return Address{

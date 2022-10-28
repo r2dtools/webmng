@@ -1,4 +1,4 @@
-package nginx
+package parser
 
 import (
 	"encoding/json"
@@ -12,11 +12,11 @@ func TestParse(t *testing.T) {
 	parser, err := GetRawParser()
 	assert.Nilf(t, err, "could not create parser: %v", err)
 
-	parsedConfig, err := parser.Parse("../../test/nginx/nginx.conf")
+	parsedConfig, err := parser.Parse("../../../test/nginx/nginx.conf")
 	assert.Nilf(t, err, "could not parse config: %v", err)
 
 	expectedData := &Config{}
-	data, err := os.ReadFile("../../test/nginx/nginx.conf.json")
+	data, err := os.ReadFile("../../../test/nginx/nginx.conf.json")
 	assert.Nilf(t, err, "could not read file with expected data: %v", err)
 
 	err = json.Unmarshal(data, expectedData)
