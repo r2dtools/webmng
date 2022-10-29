@@ -65,6 +65,7 @@ func TestGetNomalizedIpv6(t *testing.T) {
 	items := []Ipv6Data{
 		{"[fd00:dead:beaf::1]:80", "fd00:dead:beaf:0:0:0:0:1"},
 		{"[fe80::200:f8ff:fe21:00cf]:80", "fe80:0:0:0:200:f8ff:fe21:cf"},
+		{"[::]", "0:0:0:0:0:0:0:0"},
 	}
 
 	for _, item := range items {
