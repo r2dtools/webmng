@@ -1,9 +1,14 @@
 package utils
 
 import (
+	"fmt"
 	"os/exec"
+	"path"
+	"path/filepath"
+	"strings"
 
 	"github.com/Masterminds/semver"
+	"github.com/unknwon/com"
 )
 
 // CheckMinVersion checks if version is higher or equal than minVersion
@@ -31,4 +36,27 @@ func IsCommandExist(name string) bool {
 	}
 
 	return false
+}
+
+func FindFirstExistedDirectory(directories []string) (string, error) {
+	for _, directory := range directories {
+		if com.IsDir(directory) {
+			return filepath.Abs(directory)
+		}
+	}
+
+	return "", fmt.Errorf("none of the directories exist: %s", strings.Join(directories, ", "))
+}
+
+// FindAnyFilesInDirectory detects any of the files in the specified directory
+func FindAnyFilesInDirectory(directory string, files []string) (string, error) {
+	for _, file := range files {
+		path := path.Join(directory, file)
+
+		if com.IsFile(path) {
+			return path, nil
+		}
+	}
+
+	return "", fmt.Errorf("could not find any of the files \"%s\" in the directory \"%s\"", strings.Join(files, ", "), directory)
 }

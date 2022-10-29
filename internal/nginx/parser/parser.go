@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	iwebserver "github.com/r2dtools/webmng/internal/pkg/webserver"
 	"github.com/r2dtools/webmng/pkg/logger"
+	"github.com/r2dtools/webmng/pkg/utils"
 	"github.com/r2dtools/webmng/pkg/webserver"
 	"github.com/r2dtools/webmng/pkg/webserver/host"
 )
@@ -213,7 +213,7 @@ func GetParser(serverRoot string, logger logger.LoggerInterface) (*Parser, error
 		return nil, err
 	}
 
-	configRoot, err := iwebserver.GetConfigRootPath(serverRoot, []string{"nginx.conf"})
+	configRoot, err := utils.FindAnyFilesInDirectory(serverRoot, []string{"nginx.conf"})
 	if err != nil {
 		return nil, err
 	}

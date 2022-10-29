@@ -8,6 +8,7 @@ import (
 	"github.com/r2dtools/webmng/internal/apache/apachectl"
 	"github.com/r2dtools/webmng/internal/apache/apachesite"
 	apacheoptions "github.com/r2dtools/webmng/internal/apache/options"
+	"github.com/r2dtools/webmng/internal/apache/parser"
 	"github.com/r2dtools/webmng/pkg/aug"
 	"github.com/r2dtools/webmng/pkg/logger"
 	"github.com/r2dtools/webmng/pkg/utils"
@@ -19,13 +20,10 @@ const (
 	minApacheVersion = "2.4.0"
 )
 
-var serverRootPaths = []string{"/etc/httpd", "/etc/apache2"}
-var configFiles = []string{"apache2.conf", "httpd.conf", "conf/httpd.conf"}
-
 type ApacheManager struct {
 	apachectl     *apachectl.ApacheCtl
 	apachesite    *apachesite.ApacheSite
-	parser        *Parser
+	parser        *parser.Parser
 	logger        logger.LoggerInterface
 	apacheVersion string
 	hosts         []*apacheHost
@@ -302,7 +300,7 @@ func GetApacheManager(params map[string]string, logger logger.LoggerInterface) (
 	}
 
 	aSite := apachesite.GetApacheSite(options.Get(apacheoptions.ApacheEnsite), options.Get(apacheoptions.ApacheDissite))
-	parser, err := GetParser(
+	parser, err := parser.GetParser(
 		aCtl,
 		"Httpd",
 		options.Get(apacheoptions.ServerRoot),
