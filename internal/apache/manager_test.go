@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	apacheDir = "../../test/apache"
+	apacheDir = "../../test/apache/integration"
 )
 
 func TestGetHosts(t *testing.T) {
