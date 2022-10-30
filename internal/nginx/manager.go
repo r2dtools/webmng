@@ -15,9 +15,14 @@ type NginxManager struct {
 }
 
 func (m *NginxManager) GetHosts() ([]*webserver.Host, error) {
-	hosts, err := m.parser.GetHosts()
+	nginxHosts, err := m.parser.GetHosts()
 	if err != nil {
 		return nil, err
+	}
+
+	var hosts []*webserver.Host
+	for _, nginxHost := range nginxHosts {
+		hosts = append(hosts, &nginxHost.Host)
 	}
 
 	return hosts, nil

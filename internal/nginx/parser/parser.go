@@ -18,12 +18,18 @@ type Parser struct {
 	configRoot string
 }
 
-func (p *Parser) GetHosts() ([]*webserver.Host, error) {
+type nginxHost struct {
+	webserver.Host
+
+	Offset int
+}
+
+func (p *Parser) GetHosts() ([]*nginxHost, error) {
 	if err := p.Parse(); err != nil {
 		return nil, err
 	}
 
-	var hosts []*webserver.Host
+	var hosts []*nginxHost
 	serverBlocks := p.getServerBlocks()
 
 	for _, serverBlock := range serverBlocks {
@@ -49,14 +55,17 @@ func (p *Parser) GetHosts() ([]*webserver.Host, error) {
 
 		}
 
-		host := webserver.Host{
-			FilePath:   serverBlock.block.Pos.Filename,
-			ServerName: serverName,
-			DocRoot:    serverBlock.getDocumentRoot(),
-			Aliases:    aliases,
-			Addresses:  addresses,
-			Ssl:        ssl,
-			Enabled:    true, // only enabled hosts are parsed for now
+		host := nginxHost{
+			Host: webserver.Host{
+				FilePath:   serverBlock.block.Pos.Filename,
+				ServerName: serverName,
+				DocRoot:    serverBlock.getDocumentRoot(),
+				Aliases:    aliases,
+				Addresses:  addresses,
+				Ssl:        ssl,
+				Enabled:    true, // only enabled hosts are parsed for now
+			},
+			Offset: serverBlock.block.Pos.Offset,
 		}
 		hosts = append(hosts, &host)
 	}
