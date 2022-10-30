@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM golang:1.18
 
 RUN apt update && apt install -y nginx
 
@@ -6,14 +6,15 @@ ARG nginxDir=/etc/nginx
 ARG webmngDir=/opt/webmng
 ARG nginxAvailableSitesDir=${nginxDir}/sites-available
 ARG nginxEnabledSitesDir=${nginxDir}/sites-enabled
+ARG nginxConfIoDir=${nginxDir}/nginxconfig.io
 
-RUN mkdir $webmngDir
+RUN mkdir ${webmngDir} ${nginxConfIoDir}
 VOLUME ${webmngDir}
 WORKDIR  $webmngDir
 
 COPY ./test/nginx/integration/nginx.conf ${nginxDir}
 COPY ./test/nginx/integration/sites-available/example.com.conf ${nginxAvailableSitesDir}
-COPY ./test/nginx/integration/nginxconfig.io ${nginxDir}/
+COPY ./test/nginx/integration/nginxconfig.io ${nginxConfIoDir}/
 RUN ln -s ${nginxAvailableSitesDir}/example.com.conf ${nginxEnabledSitesDir}/
 
 ENTRYPOINT ["/bin/sh", "./scripts/testrun-nginx.sh"]
