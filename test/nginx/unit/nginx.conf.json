@@ -1,18 +1,22 @@
 {
    "Pos":{
       "Filename":"../../../test/nginx/unit/nginx.conf",
-      "Offset":86,
-      "Line":4,
-      "Column":1
+      "Offset":29,
+      "Line":1,
+      "Column":30
    },
    "Entries":[
       {
          "Pos":{
             "Filename":"../../../test/nginx/unit/nginx.conf",
-            "Offset":86,
-            "Line":4,
-            "Column":1
+            "Offset":29,
+            "Line":1,
+            "Column":30
          },
+         "StartNewLines":[
+            "\n",
+            "\n\n"
+         ],
          "Identifier":"user",
          "Values":[
             {
@@ -30,10 +34,13 @@
       {
          "Pos":{
             "Filename":"../../../test/nginx/unit/nginx.conf",
-            "Offset":117,
-            "Line":5,
-            "Column":1
+            "Offset":116,
+            "Line":4,
+            "Column":31
          },
+         "StartNewLines":[
+            "\n"
+         ],
          "Identifier":"pid",
          "Values":[
             {
@@ -51,10 +58,13 @@
       {
          "Pos":{
             "Filename":"../../../test/nginx/unit/nginx.conf",
-            "Offset":154,
-            "Line":6,
-            "Column":1
+            "Offset":153,
+            "Line":5,
+            "Column":37
          },
+         "StartNewLines":[
+            "\n"
+         ],
          "Identifier":"worker_processes",
          "Values":[
             {
@@ -72,10 +82,13 @@
       {
          "Pos":{
             "Filename":"../../../test/nginx/unit/nginx.conf",
-            "Offset":181,
-            "Line":7,
-            "Column":1
+            "Offset":180,
+            "Line":6,
+            "Column":27
          },
+         "StartNewLines":[
+            "\n"
+         ],
          "Identifier":"worker_rlimit_nofile",
          "Values":[
             {
@@ -93,10 +106,14 @@
       {
          "Pos":{
             "Filename":"../../../test/nginx/unit/nginx.conf",
-            "Offset":225,
-            "Line":10,
-            "Column":1
+            "Offset":208,
+            "Line":7,
+            "Column":28
          },
+         "StartNewLines":[
+            "\n\n",
+            "\n"
+         ],
          "Identifier":"include",
          "Values":[
             {
@@ -114,10 +131,13 @@
       {
          "Pos":{
             "Filename":"../../../test/nginx/unit/nginx.conf",
-            "Offset":282,
-            "Line":12,
-            "Column":1
+            "Offset":280,
+            "Line":10,
+            "Column":56
          },
+         "StartNewLines":[
+            "\n\n"
+         ],
          "Identifier":"events",
          "Values":null,
          "Block":{
@@ -131,18 +151,21 @@
             "Content":{
                "Pos":{
                   "Filename":"../../../test/nginx/unit/nginx.conf",
-                  "Offset":295,
-                  "Line":13,
-                  "Column":5
+                  "Offset":290,
+                  "Line":12,
+                  "Column":9
                },
                "Entries":[
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":295,
-                        "Line":13,
-                        "Column":5
+                        "Offset":290,
+                        "Line":12,
+                        "Column":9
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"multi_accept",
                      "Values":[
                         {
@@ -160,10 +183,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":322,
-                        "Line":14,
-                        "Column":5
+                        "Offset":317,
+                        "Line":13,
+                        "Column":27
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"worker_connections",
                      "Values":[
                         {
@@ -178,6 +204,9 @@
                      ],
                      "Block":null
                   }
+               ],
+               "EndNewLines":[
+                  "\n"
                ]
             }
          }
@@ -185,10 +214,13 @@
       {
          "Pos":{
             "Filename":"../../../test/nginx/unit/nginx.conf",
-            "Offset":351,
-            "Line":17,
-            "Column":1
+            "Offset":349,
+            "Line":15,
+            "Column":2
          },
+         "StartNewLines":[
+            "\n\n"
+         ],
          "Identifier":"http",
          "Values":null,
          "Block":{
@@ -202,18 +234,21 @@
             "Content":{
                "Pos":{
                   "Filename":"../../../test/nginx/unit/nginx.conf",
-                  "Offset":362,
-                  "Line":18,
-                  "Column":5
+                  "Offset":357,
+                  "Line":17,
+                  "Column":7
                },
                "Entries":[
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":362,
-                        "Line":18,
-                        "Column":5
+                        "Offset":357,
+                        "Line":17,
+                        "Column":7
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"charset",
                      "Values":[
                         {
@@ -231,10 +266,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":396,
-                        "Line":19,
-                        "Column":5
+                        "Offset":391,
+                        "Line":18,
+                        "Column":34
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"sendfile",
                      "Values":[
                         {
@@ -252,10 +290,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":427,
-                        "Line":20,
-                        "Column":5
+                        "Offset":422,
+                        "Line":19,
+                        "Column":31
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"tcp_nopush",
                      "Values":[
                         {
@@ -273,10 +314,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":458,
-                        "Line":21,
-                        "Column":5
+                        "Offset":453,
+                        "Line":20,
+                        "Column":31
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"tcp_nodelay",
                      "Values":[
                         {
@@ -294,10 +338,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":489,
-                        "Line":22,
-                        "Column":5
+                        "Offset":484,
+                        "Line":21,
+                        "Column":31
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"server_tokens",
                      "Values":[
                         {
@@ -315,10 +362,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":521,
-                        "Line":23,
-                        "Column":5
+                        "Offset":516,
+                        "Line":22,
+                        "Column":32
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"log_not_found",
                      "Values":[
                         {
@@ -336,10 +386,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":553,
-                        "Line":24,
-                        "Column":5
+                        "Offset":548,
+                        "Line":23,
+                        "Column":32
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"types_hash_max_size",
                      "Values":[
                         {
@@ -357,10 +410,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":586,
-                        "Line":25,
-                        "Column":5
+                        "Offset":581,
+                        "Line":24,
+                        "Column":33
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"types_hash_bucket_size",
                      "Values":[
                         {
@@ -378,10 +434,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":617,
-                        "Line":26,
-                        "Column":5
+                        "Offset":612,
+                        "Line":25,
+                        "Column":31
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"client_max_body_size",
                      "Values":[
                         {
@@ -399,10 +458,14 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":661,
-                        "Line":29,
-                        "Column":5
+                        "Offset":644,
+                        "Line":26,
+                        "Column":32
                      },
+                     "StartNewLines":[
+                        "\n\n",
+                        "\n"
+                     ],
                      "Identifier":"include",
                      "Values":[
                         {
@@ -420,10 +483,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":700,
-                        "Line":30,
-                        "Column":5
+                        "Offset":695,
+                        "Line":29,
+                        "Column":39
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"default_type",
                      "Values":[
                         {
@@ -441,10 +507,14 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":768,
-                        "Line":33,
-                        "Column":5
+                        "Offset":748,
+                        "Line":30,
+                        "Column":53
                      },
+                     "StartNewLines":[
+                        "\n\n",
+                        "\n"
+                     ],
                      "Identifier":"access_log",
                      "Values":[
                         {
@@ -462,10 +532,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":822,
-                        "Line":34,
-                        "Column":5
+                        "Offset":817,
+                        "Line":33,
+                        "Column":54
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"error_log",
                      "Values":[
                         {
@@ -492,10 +565,14 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":891,
-                        "Line":37,
-                        "Column":5
+                        "Offset":875,
+                        "Line":34,
+                        "Column":58
                      },
+                     "StartNewLines":[
+                        "\n\n",
+                        "\n"
+                     ],
                      "Identifier":"ssl_session_timeout",
                      "Values":[
                         {
@@ -513,10 +590,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":922,
-                        "Line":38,
-                        "Column":5
+                        "Offset":917,
+                        "Line":37,
+                        "Column":31
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"ssl_session_cache",
                      "Values":[
                         {
@@ -534,10 +614,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":965,
-                        "Line":39,
-                        "Column":5
+                        "Offset":960,
+                        "Line":38,
+                        "Column":43
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"ssl_session_tickets",
                      "Values":[
                         {
@@ -555,10 +638,14 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":1039,
-                        "Line":42,
-                        "Column":5
+                        "Offset":992,
+                        "Line":39,
+                        "Column":32
                      },
+                     "StartNewLines":[
+                        "\n\n",
+                        "\n"
+                     ],
                      "Identifier":"ssl_protocols",
                      "Values":[
                         {
@@ -585,10 +672,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":1083,
-                        "Line":43,
-                        "Column":5
+                        "Offset":1078,
+                        "Line":42,
+                        "Column":44
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"ssl_ciphers",
                      "Values":[
                         {
@@ -606,10 +696,14 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":1358,
-                        "Line":46,
-                        "Column":5
+                        "Offset":1332,
+                        "Line":43,
+                        "Column":254
                      },
+                     "StartNewLines":[
+                        "\n\n",
+                        "\n"
+                     ],
                      "Identifier":"ssl_stapling",
                      "Values":[
                         {
@@ -627,10 +721,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":1389,
-                        "Line":47,
-                        "Column":5
+                        "Offset":1384,
+                        "Line":46,
+                        "Column":31
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"ssl_stapling_verify",
                      "Values":[
                         {
@@ -648,10 +745,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":1420,
-                        "Line":48,
-                        "Column":5
+                        "Offset":1415,
+                        "Line":47,
+                        "Column":31
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"resolver",
                      "Values":[
                         {
@@ -723,10 +823,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":1520,
-                        "Line":49,
-                        "Column":5
+                        "Offset":1515,
+                        "Line":48,
+                        "Column":100
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"resolver_timeout",
                      "Values":[
                         {
@@ -744,10 +847,14 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":1571,
-                        "Line":52,
-                        "Column":5
+                        "Offset":1546,
+                        "Line":49,
+                        "Column":31
                      },
+                     "StartNewLines":[
+                        "\n\n",
+                        "\n"
+                     ],
                      "Identifier":"include",
                      "Values":[
                         {
@@ -765,10 +872,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":1624,
-                        "Line":53,
-                        "Column":5
+                        "Offset":1619,
+                        "Line":52,
+                        "Column":53
                      },
+                     "StartNewLines":[
+                        "\n"
+                     ],
                      "Identifier":"include",
                      "Values":[
                         {
@@ -786,10 +896,13 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":1680,
-                        "Line":55,
-                        "Column":5
+                        "Offset":1674,
+                        "Line":53,
+                        "Column":55
                      },
+                     "StartNewLines":[
+                        "\n\n"
+                     ],
                      "Identifier":"server",
                      "Values":null,
                      "Block":{
@@ -803,18 +916,21 @@
                         "Content":{
                            "Pos":{
                               "Filename":"../../../test/nginx/unit/nginx.conf",
-                              "Offset":1697,
-                              "Line":56,
-                              "Column":9
+                              "Offset":1688,
+                              "Line":55,
+                              "Column":13
                            },
                            "Entries":[
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":1697,
-                                    "Line":56,
-                                    "Column":9
+                                    "Offset":1688,
+                                    "Line":55,
+                                    "Column":13
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"listen",
                                  "Values":[
                                     {
@@ -850,10 +966,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":1744,
-                                    "Line":57,
-                                    "Column":9
+                                    "Offset":1735,
+                                    "Line":56,
+                                    "Column":47
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"listen",
                                  "Values":[
                                     {
@@ -889,10 +1008,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":1796,
-                                    "Line":58,
-                                    "Column":9
+                                    "Offset":1787,
+                                    "Line":57,
+                                    "Column":52
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"server_name",
                                  "Values":[
                                     {
@@ -910,10 +1032,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":1841,
-                                    "Line":59,
-                                    "Column":9
+                                    "Offset":1832,
+                                    "Line":58,
+                                    "Column":45
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"set",
                                  "Values":[
                                     {
@@ -940,10 +1065,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":1901,
-                                    "Line":60,
-                                    "Column":9
+                                    "Offset":1892,
+                                    "Line":59,
+                                    "Column":60
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"root",
                                  "Values":[
                                     {
@@ -961,10 +1089,14 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":1962,
-                                    "Line":63,
-                                    "Column":9
+                                    "Offset":1938,
+                                    "Line":60,
+                                    "Column":46
                                  },
+                                 "StartNewLines":[
+                                    "\n\n",
+                                    "\n"
+                                 ],
                                  "Identifier":"ssl_certificate",
                                  "Values":[
                                     {
@@ -982,10 +1114,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":2043,
-                                    "Line":64,
-                                    "Column":9
+                                    "Offset":2034,
+                                    "Line":63,
+                                    "Column":81
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"ssl_certificate_key",
                                  "Values":[
                                     {
@@ -1003,10 +1138,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":2122,
-                                    "Line":65,
-                                    "Column":9
+                                    "Offset":2113,
+                                    "Line":64,
+                                    "Column":79
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"ssl_trusted_certificate",
                                  "Values":[
                                     {
@@ -1024,10 +1162,15 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":2246,
-                                    "Line":69,
-                                    "Column":9
+                                    "Offset":2190,
+                                    "Line":65,
+                                    "Column":77
                                  },
+                                 "StartNewLines":[
+                                    "\n\n",
+                                    "\n",
+                                    "\n"
+                                 ],
                                  "Identifier":"add_header",
                                  "Values":[
                                     {
@@ -1063,10 +1206,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":2315,
-                                    "Line":70,
-                                    "Column":9
+                                    "Offset":2306,
+                                    "Line":69,
+                                    "Column":69
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"add_header",
                                  "Values":[
                                     {
@@ -1102,10 +1248,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":2378,
-                                    "Line":71,
-                                    "Column":9
+                                    "Offset":2369,
+                                    "Line":70,
+                                    "Column":63
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"add_header",
                                  "Values":[
                                     {
@@ -1141,10 +1290,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":2460,
-                                    "Line":72,
-                                    "Column":9
+                                    "Offset":2451,
+                                    "Line":71,
+                                    "Column":82
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"add_header",
                                  "Values":[
                                     {
@@ -1180,10 +1332,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":2609,
-                                    "Line":73,
-                                    "Column":9
+                                    "Offset":2600,
+                                    "Line":72,
+                                    "Column":149
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"add_header",
                                  "Values":[
                                     {
@@ -1219,10 +1374,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":2683,
-                                    "Line":74,
-                                    "Column":9
+                                    "Offset":2674,
+                                    "Line":73,
+                                    "Column":74
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"add_header",
                                  "Values":[
                                     {
@@ -1258,10 +1416,14 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":2793,
-                                    "Line":77,
-                                    "Column":9
+                                    "Offset":2765,
+                                    "Line":74,
+                                    "Column":91
                                  },
+                                 "StartNewLines":[
+                                    "\n\n",
+                                    "\n"
+                                 ],
                                  "Identifier":"location",
                                  "Values":null,
                                  "Block":{
@@ -1294,18 +1456,21 @@
                                     "Content":{
                                        "Pos":{
                                           "Filename":"../../../test/nginx/unit/nginx.conf",
-                                          "Offset":2836,
-                                          "Line":78,
-                                          "Column":13
+                                          "Offset":2823,
+                                          "Line":77,
+                                          "Column":39
                                        },
                                        "Entries":[
                                           {
                                              "Pos":{
                                                 "Filename":"../../../test/nginx/unit/nginx.conf",
-                                                "Offset":2836,
-                                                "Line":78,
-                                                "Column":13
+                                                "Offset":2823,
+                                                "Line":77,
+                                                "Column":39
                                              },
+                                             "StartNewLines":[
+                                                "\n"
+                                             ],
                                              "Identifier":"deny",
                                              "Values":[
                                                 {
@@ -1320,6 +1485,9 @@
                                              ],
                                              "Block":null
                                           }
+                                       ],
+                                       "EndNewLines":[
+                                          "\n"
                                        ]
                                     }
                                  }
@@ -1327,10 +1495,14 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":2885,
-                                    "Line":82,
-                                    "Column":9
+                                    "Offset":2855,
+                                    "Line":79,
+                                    "Column":10
                                  },
+                                 "StartNewLines":[
+                                    "\n\n",
+                                    "\n"
+                                 ],
                                  "Identifier":"index",
                                  "Values":[
                                     {
@@ -1348,10 +1520,14 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":2958,
-                                    "Line":85,
-                                    "Column":9
+                                    "Offset":2919,
+                                    "Line":82,
+                                    "Column":43
                                  },
+                                 "StartNewLines":[
+                                    "\n\n",
+                                    "\n"
+                                 ],
                                  "Identifier":"location",
                                  "Values":null,
                                  "Block":{
@@ -1375,18 +1551,21 @@
                                     "Content":{
                                        "Pos":{
                                           "Filename":"../../../test/nginx/unit/nginx.conf",
-                                          "Offset":2983,
-                                          "Line":86,
-                                          "Column":13
+                                          "Offset":2970,
+                                          "Line":85,
+                                          "Column":21
                                        },
                                        "Entries":[
                                           {
                                              "Pos":{
                                                 "Filename":"../../../test/nginx/unit/nginx.conf",
-                                                "Offset":2983,
-                                                "Line":86,
-                                                "Column":13
+                                                "Offset":2970,
+                                                "Line":85,
+                                                "Column":21
                                              },
+                                             "StartNewLines":[
+                                                "\n"
+                                             ],
                                              "Identifier":"try_files",
                                              "Values":[
                                                 {
@@ -1419,6 +1598,9 @@
                                              ],
                                              "Block":null
                                           }
+                                       ],
+                                       "EndNewLines":[
+                                          "\n"
                                        ]
                                     }
                                  }
@@ -1426,10 +1608,14 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":3077,
-                                    "Line":90,
-                                    "Column":9
+                                    "Offset":3039,
+                                    "Line":87,
+                                    "Column":10
                                  },
+                                 "StartNewLines":[
+                                    "\n\n",
+                                    "\n"
+                                 ],
                                  "Identifier":"include",
                                  "Values":[
                                     {
@@ -1447,10 +1633,14 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":3145,
-                                    "Line":93,
-                                    "Column":9
+                                    "Offset":3113,
+                                    "Line":90,
+                                    "Column":45
                                  },
+                                 "StartNewLines":[
+                                    "\n\n",
+                                    "\n"
+                                 ],
                                  "Identifier":"location",
                                  "Values":null,
                                  "Block":{
@@ -1483,18 +1673,21 @@
                                     "Content":{
                                        "Pos":{
                                           "Filename":"../../../test/nginx/unit/nginx.conf",
-                                          "Offset":3177,
-                                          "Line":94,
-                                          "Column":13
+                                          "Offset":3164,
+                                          "Line":93,
+                                          "Column":28
                                        },
                                        "Entries":[
                                           {
                                              "Pos":{
                                                 "Filename":"../../../test/nginx/unit/nginx.conf",
-                                                "Offset":3177,
-                                                "Line":94,
-                                                "Column":13
+                                                "Offset":3164,
+                                                "Line":93,
+                                                "Column":28
                                              },
+                                             "StartNewLines":[
+                                                "\n"
+                                             ],
                                              "Identifier":"fastcgi_pass",
                                              "Values":[
                                                 {
@@ -1512,10 +1705,14 @@
                                           {
                                              "Pos":{
                                                 "Filename":"../../../test/nginx/unit/nginx.conf",
-                                                "Offset":3252,
-                                                "Line":96,
-                                                "Column":13
+                                                "Offset":3221,
+                                                "Line":94,
+                                                "Column":57
                                              },
+                                             "StartNewLines":[
+                                                "\n",
+                                                "\n"
+                                             ],
                                              "Identifier":"try_files",
                                              "Values":[
                                                 {
@@ -1542,10 +1739,14 @@
                                           {
                                              "Pos":{
                                                 "Filename":"../../../test/nginx/unit/nginx.conf",
-                                                "Offset":3359,
-                                                "Line":99,
-                                                "Column":13
+                                                "Offset":3308,
+                                                "Line":96,
+                                                "Column":69
                                              },
+                                             "StartNewLines":[
+                                                "\n\n",
+                                                "\n"
+                                             ],
                                              "Identifier":"include",
                                              "Values":[
                                                 {
@@ -1563,10 +1764,14 @@
                                           {
                                              "Pos":{
                                                 "Filename":"../../../test/nginx/unit/nginx.conf",
-                                                "Offset":3449,
-                                                "Line":102,
-                                                "Column":13
+                                                "Offset":3404,
+                                                "Line":99,
+                                                "Column":58
                                              },
+                                             "StartNewLines":[
+                                                "\n\n",
+                                                "\n"
+                                             ],
                                              "Identifier":"fastcgi_index",
                                              "Values":[
                                                 {
@@ -1584,10 +1789,13 @@
                                           {
                                              "Pos":{
                                                 "Filename":"../../../test/nginx/unit/nginx.conf",
-                                                "Offset":3502,
-                                                "Line":103,
-                                                "Column":13
+                                                "Offset":3489,
+                                                "Line":102,
+                                                "Column":53
                                              },
+                                             "StartNewLines":[
+                                                "\n"
+                                             ],
                                              "Identifier":"fastcgi_buffers",
                                              "Values":[
                                                 {
@@ -1614,10 +1822,13 @@
                                           {
                                              "Pos":{
                                                 "Filename":"../../../test/nginx/unit/nginx.conf",
-                                                "Offset":3551,
-                                                "Line":104,
-                                                "Column":13
+                                                "Offset":3538,
+                                                "Line":103,
+                                                "Column":49
                                              },
+                                             "StartNewLines":[
+                                                "\n"
+                                             ],
                                              "Identifier":"fastcgi_buffer_size",
                                              "Values":[
                                                 {
@@ -1635,10 +1846,14 @@
                                           {
                                              "Pos":{
                                                 "Filename":"../../../test/nginx/unit/nginx.conf",
-                                                "Offset":3628,
-                                                "Line":107,
-                                                "Column":13
+                                                "Offset":3585,
+                                                "Line":104,
+                                                "Column":47
                                              },
+                                             "StartNewLines":[
+                                                "\n\n",
+                                                "\n"
+                                             ],
                                              "Identifier":"fastcgi_param",
                                              "Values":[
                                                 {
@@ -1665,10 +1880,13 @@
                                           {
                                              "Pos":{
                                                 "Filename":"../../../test/nginx/unit/nginx.conf",
-                                                "Offset":3686,
-                                                "Line":108,
-                                                "Column":13
+                                                "Offset":3673,
+                                                "Line":107,
+                                                "Column":58
                                              },
+                                             "StartNewLines":[
+                                                "\n"
+                                             ],
                                              "Identifier":"fastcgi_param",
                                              "Values":[
                                                 {
@@ -1695,10 +1913,13 @@
                                           {
                                              "Pos":{
                                                 "Filename":"../../../test/nginx/unit/nginx.conf",
-                                                "Offset":3764,
-                                                "Line":109,
-                                                "Column":13
+                                                "Offset":3751,
+                                                "Line":108,
+                                                "Column":78
                                              },
+                                             "StartNewLines":[
+                                                "\n"
+                                             ],
                                              "Identifier":"fastcgi_param",
                                              "Values":[
                                                 {
@@ -1722,10 +1943,16 @@
                                              ],
                                              "Block":null
                                           }
+                                       ],
+                                       "EndNewLines":[
+                                          "\n"
                                        ]
                                     }
                                  }
                               }
+                           ],
+                           "EndNewLines":[
+                              "\n"
                            ]
                         }
                      }
@@ -1733,10 +1960,14 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":3884,
-                        "Line":114,
-                        "Column":5
+                        "Offset":3852,
+                        "Line":111,
+                        "Column":6
                      },
+                     "StartNewLines":[
+                        "\n\n",
+                        "\n"
+                     ],
                      "Identifier":"server",
                      "Values":null,
                      "Block":{
@@ -1750,18 +1981,21 @@
                         "Content":{
                            "Pos":{
                               "Filename":"../../../test/nginx/unit/nginx.conf",
-                              "Offset":3901,
-                              "Line":115,
-                              "Column":9
+                              "Offset":3892,
+                              "Line":114,
+                              "Column":13
                            },
                            "Entries":[
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":3901,
-                                    "Line":115,
-                                    "Column":9
+                                    "Offset":3892,
+                                    "Line":114,
+                                    "Column":13
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"listen",
                                  "Values":[
                                     {
@@ -1797,10 +2031,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":3948,
-                                    "Line":116,
-                                    "Column":9
+                                    "Offset":3939,
+                                    "Line":115,
+                                    "Column":47
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"listen",
                                  "Values":[
                                     {
@@ -1836,10 +2073,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":4000,
-                                    "Line":117,
-                                    "Column":9
+                                    "Offset":3991,
+                                    "Line":116,
+                                    "Column":52
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"server_name",
                                  "Values":[
                                     {
@@ -1857,10 +2097,14 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":4062,
-                                    "Line":120,
-                                    "Column":9
+                                    "Offset":4038,
+                                    "Line":117,
+                                    "Column":47
                                  },
+                                 "StartNewLines":[
+                                    "\n\n",
+                                    "\n"
+                                 ],
                                  "Identifier":"ssl_certificate",
                                  "Values":[
                                     {
@@ -1878,10 +2122,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":4143,
-                                    "Line":121,
-                                    "Column":9
+                                    "Offset":4134,
+                                    "Line":120,
+                                    "Column":81
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"ssl_certificate_key",
                                  "Values":[
                                     {
@@ -1899,10 +2146,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":4222,
-                                    "Line":122,
-                                    "Column":9
+                                    "Offset":4213,
+                                    "Line":121,
+                                    "Column":79
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"ssl_trusted_certificate",
                                  "Values":[
                                     {
@@ -1920,10 +2170,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":4299,
-                                    "Line":123,
-                                    "Column":9
+                                    "Offset":4290,
+                                    "Line":122,
+                                    "Column":77
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"return",
                                  "Values":[
                                     {
@@ -1947,6 +2200,9 @@
                                  ],
                                  "Block":null
                               }
+                           ],
+                           "EndNewLines":[
+                              "\n"
                            ]
                         }
                      }
@@ -1954,10 +2210,14 @@
                   {
                      "Pos":{
                         "Filename":"../../../test/nginx/unit/nginx.conf",
-                        "Offset":4391,
-                        "Line":127,
-                        "Column":5
+                        "Offset":4365,
+                        "Line":124,
+                        "Column":6
                      },
+                     "StartNewLines":[
+                        "\n\n",
+                        "\n"
+                     ],
                      "Identifier":"server",
                      "Values":null,
                      "Block":{
@@ -1971,18 +2231,21 @@
                         "Content":{
                            "Pos":{
                               "Filename":"../../../test/nginx/unit/nginx.conf",
-                              "Offset":4408,
-                              "Line":128,
-                              "Column":9
+                              "Offset":4399,
+                              "Line":127,
+                              "Column":13
                            },
                            "Entries":[
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":4408,
-                                    "Line":128,
-                                    "Column":9
+                                    "Offset":4399,
+                                    "Line":127,
+                                    "Column":13
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"listen",
                                  "Values":[
                                     {
@@ -2000,10 +2263,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":4432,
-                                    "Line":129,
-                                    "Column":9
+                                    "Offset":4423,
+                                    "Line":128,
+                                    "Column":24
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"listen",
                                  "Values":[
                                     {
@@ -2021,10 +2287,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":4461,
-                                    "Line":130,
-                                    "Column":9
+                                    "Offset":4452,
+                                    "Line":129,
+                                    "Column":29
                                  },
+                                 "StartNewLines":[
+                                    "\n"
+                                 ],
                                  "Identifier":"server_name",
                                  "Values":[
                                     {
@@ -2042,10 +2311,15 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":4529,
-                                    "Line":133,
-                                    "Column":9
+                                    "Offset":4486,
+                                    "Line":130,
+                                    "Column":34
                                  },
+                                 "StartNewLines":[
+                                    "\n",
+                                    "\n",
+                                    "\n"
+                                 ],
                                  "Identifier":"location",
                                  "Values":null,
                                  "Block":{
@@ -2078,18 +2352,21 @@
                                     "Content":{
                                        "Pos":{
                                           "Filename":"../../../test/nginx/unit/nginx.conf",
-                                          "Offset":4584,
-                                          "Line":134,
-                                          "Column":13
+                                          "Offset":4571,
+                                          "Line":133,
+                                          "Column":51
                                        },
                                        "Entries":[
                                           {
                                              "Pos":{
                                                 "Filename":"../../../test/nginx/unit/nginx.conf",
-                                                "Offset":4584,
-                                                "Line":134,
-                                                "Column":13
+                                                "Offset":4571,
+                                                "Line":133,
+                                                "Column":51
                                              },
+                                             "StartNewLines":[
+                                                "\n"
+                                             ],
                                              "Identifier":"root",
                                              "Values":[
                                                 {
@@ -2104,6 +2381,9 @@
                                              ],
                                              "Block":null
                                           }
+                                       ],
+                                       "EndNewLines":[
+                                          "\n"
                                        ]
                                     }
                                  }
@@ -2111,10 +2391,13 @@
                               {
                                  "Pos":{
                                     "Filename":"../../../test/nginx/unit/nginx.conf",
-                                    "Offset":4631,
-                                    "Line":137,
-                                    "Column":9
+                                    "Offset":4621,
+                                    "Line":135,
+                                    "Column":10
                                  },
+                                 "StartNewLines":[
+                                    "\n\n"
+                                 ],
                                  "Identifier":"location",
                                  "Values":null,
                                  "Block":{
@@ -2138,18 +2421,21 @@
                                     "Content":{
                                        "Pos":{
                                           "Filename":"../../../test/nginx/unit/nginx.conf",
-                                          "Offset":4656,
-                                          "Line":138,
-                                          "Column":13
+                                          "Offset":4643,
+                                          "Line":137,
+                                          "Column":21
                                        },
                                        "Entries":[
                                           {
                                              "Pos":{
                                                 "Filename":"../../../test/nginx/unit/nginx.conf",
-                                                "Offset":4656,
-                                                "Line":138,
-                                                "Column":13
+                                                "Offset":4643,
+                                                "Line":137,
+                                                "Column":21
                                              },
+                                             "StartNewLines":[
+                                                "\n"
+                                             ],
                                              "Identifier":"return",
                                              "Values":[
                                                 {
@@ -2173,17 +2459,29 @@
                                              ],
                                              "Block":null
                                           }
+                                       ],
+                                       "EndNewLines":[
+                                          "\n"
                                        ]
                                     }
                                  }
                               }
+                           ],
+                           "EndNewLines":[
+                              "\n"
                            ]
                         }
                      }
                   }
+               ],
+               "EndNewLines":[
+                  "\n"
                ]
             }
          }
       }
+   ],
+   "EndNewLines":[
+      "\n"
    ]
 }

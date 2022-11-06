@@ -20,18 +20,24 @@ type Block struct {
 	Content    *BlockContent `"{" @@ "}"`
 }
 
+func (b *Block) GetParametersExpressions() []string {
+	return getExpressions(b.Parameters)
+}
+
 type BlockContent struct {
 	Pos lexer.Position
 
-	Entries []*Entry `@@*`
+	Entries     []*Entry `@@*`
+	EndNewLines []string `@NewLine*`
 }
 
 type Entry struct {
 	Pos lexer.Position
 
-	Identifier string   `@Ident`
-	Values     []*Value `( @@+";"`
-	Block      *Block   `| @@)`
+	StartNewLines []string `@NewLine*`
+	Identifier    string   `@Ident`
+	Values        []*Value `( @@+";"`
+	Block         *Block   `| @@)`
 }
 
 func (e *Entry) GetFirstValueStr() string {
@@ -40,6 +46,10 @@ func (e *Entry) GetFirstValueStr() string {
 	}
 
 	return e.Values[0].Expression
+}
+
+func (e *Entry) GetExpressions() []string {
+	return getExpressions(e.Values)
 }
 
 func (e *Entry) GetValues() []*Value {
@@ -57,7 +67,8 @@ func (e *Entry) GetValues() []*Value {
 type Config struct {
 	Pos lexer.Position
 
-	Entries []*Entry `@@*`
+	Entries     []*Entry `@@*`
+	EndNewLines []string `@NewLine*`
 }
 
 type RawParser struct {
@@ -80,13 +91,15 @@ func (p *RawParser) Parse(configPath string) (*Config, error) {
 func GetRawParser() (*RawParser, error) {
 	def := lexer.MustStateful(lexer.Rules{
 		"Root": {
-			{`whitespace`, `\s+`, nil},
+			{`NewLine`, `[\r\n]+`, nil},
+			{`whitespace`, `[^\S\r\n]+`, nil},
 			{`comment`, `#.*`, nil},
 			{"BlockEnd", `}`, nil},
 			{`Ident`, `\w+`, lexer.Push("IdentParse")},
 		},
 		"IdentParse": {
-			{`whitespace`, `\s+`, nil},
+			{`NewLine`, `[\r\n]+`, nil},
+			{`whitespace`, `[^\S\r\n]+`, nil},
 			{`comment`, `#.*`, nil},
 			{`String`, `"[^"]*"`, nil},
 			{`StringSingleQuoted`, `'[^']*'`, nil},
@@ -110,4 +123,16 @@ func GetRawParser() (*RawParser, error) {
 	}
 
 	return &parser, nil
+}
+
+func getExpressions(values []*Value) []string {
+	expressions := []string{}
+
+	for _, value := range values {
+		if value != nil {
+			expressions = append(expressions, value.Expression)
+		}
+	}
+
+	return expressions
 }
