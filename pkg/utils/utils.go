@@ -60,3 +60,21 @@ func FindAnyFilesInDirectory(directory string, files []string) (string, error) {
 
 	return "", fmt.Errorf("could not find any of the files \"%s\" in the directory \"%s\"", strings.Join(files, ", "), directory)
 }
+
+// StrSlicesDifference returns all elements of the first slice which do not present in the second one
+func StrSlicesDifference(a, b []string) []string {
+	mb := make(map[string]struct{}, len(b))
+	var diff []string
+
+	for _, x := range b {
+		mb[x] = struct{}{}
+	}
+
+	for _, x := range a {
+		if _, found := mb[x]; !found {
+			diff = append(diff, x)
+		}
+	}
+
+	return diff
+}

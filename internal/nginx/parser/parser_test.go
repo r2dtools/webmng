@@ -36,17 +36,17 @@ func getNginxParser(t *testing.T) *Parser {
 	return parser
 }
 
-func getHostsFromJSON(t *testing.T) map[int]*nginxHost {
+func getHostsFromJSON(t *testing.T) map[int]nginxHost {
 	hostsPath := nginxDir + "/hosts.json"
 	assert.FileExists(t, hostsPath, "could not open hosts file")
 	data, err := os.ReadFile(hostsPath)
 	assert.Nilf(t, err, "could not read hosts file: %v", err)
 
-	var hosts []*nginxHost
+	var hosts []nginxHost
 	err = json.Unmarshal(data, &hosts)
 	assert.Nilf(t, err, "could not decode hosts: %v", err)
 
-	hostsMap := make(map[int]*nginxHost)
+	hostsMap := make(map[int]nginxHost)
 	for _, host := range hosts {
 		hostsMap[host.Offset] = host
 	}

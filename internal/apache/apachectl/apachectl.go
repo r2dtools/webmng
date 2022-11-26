@@ -12,36 +12,42 @@ type ApacheCtl struct {
 	binPath string
 }
 
-func GetApacheCtl(binPath string) (*ApacheCtl, error) {
+func GetApacheCtl(binPath string) (ApacheCtl, error) {
+	var apacheCtl ApacheCtl
+
 	if binPath != "" {
-		return &ApacheCtl{binPath: binPath}, nil
+		apacheCtl.binPath = binPath
+
+		return apacheCtl, nil
 	}
 
 	binPath, err := detectCtlCmd()
 
 	if err != nil {
-		return nil, err
+		return apacheCtl, err
 	}
 
-	return &ApacheCtl{binPath: binPath}, nil
+	apacheCtl.binPath = binPath
+
+	return apacheCtl, nil
 }
 
 // ParseIncludes returns Include directives from httpd process and returns a list of their values.
-func (a *ApacheCtl) ParseIncludes() ([]string, error) {
+func (a ApacheCtl) ParseIncludes() ([]string, error) {
 	params := []string{"-t", "-D", "DUMP_INCLUDES"}
 
 	return a.parseCmdOutput(params, `\(.*\) (.*)`, 1)
 }
 
 // ParseModules return the list of loaded module names.
-func (a *ApacheCtl) ParseModules() ([]string, error) {
+func (a ApacheCtl) ParseModules() ([]string, error) {
 	params := []string{"-t", "-D", "DUMP_MODULES"}
 
 	return a.parseCmdOutput(params, `(.*)_module`, 1)
 }
 
 // ParseDefines returns a map of the defined variables.
-func (a *ApacheCtl) ParseDefines() (map[string]string, error) {
+func (a ApacheCtl) ParseDefines() (map[string]string, error) {
 	params := []string{"-t", "-D", "DUMP_RUN_CFG"}
 	items, err := a.parseCmdOutput(params, `Define: ([^ \n]*)`, 1)
 
@@ -73,7 +79,7 @@ func (a *ApacheCtl) ParseDefines() (map[string]string, error) {
 }
 
 // GetVersion returns apache version
-func (a *ApacheCtl) GetVersion() (string, error) {
+func (a ApacheCtl) GetVersion() (string, error) {
 	params := []string{"-v"}
 	result, err := a.parseCmdOutput(params, `(?i)Apache/([0-9\.]*)`, 1)
 
@@ -89,7 +95,7 @@ func (a *ApacheCtl) GetVersion() (string, error) {
 }
 
 // TestConfiguration checks the syntax of apache configuration files
-func (a *ApacheCtl) TestConfiguration() error {
+func (a ApacheCtl) TestConfiguration() error {
 	if _, err := a.execCmd([]string{"-t"}); err != nil {
 		return err
 	}
@@ -98,7 +104,7 @@ func (a *ApacheCtl) TestConfiguration() error {
 }
 
 // Restart restarts apache webserver
-func (a *ApacheCtl) Restart() error {
+func (a ApacheCtl) Restart() error {
 	if _, err := a.execCmd([]string{"-k", "restart"}); err != nil {
 		return err
 	}
@@ -106,13 +112,15 @@ func (a *ApacheCtl) Restart() error {
 	return nil
 }
 
-func (a *ApacheCtl) parseCmdOutput(params []string, regexpStr string, captureGroup uint) ([]string, error) {
+func (a ApacheCtl) parseCmdOutput(params []string, regexpStr string, captureGroup uint) ([]string, error) {
 	output, err := a.execCmd(params)
+
 	if err != nil {
 		return nil, err
 	}
 
 	reg, err := regexp.Compile(regexpStr)
+
 	if err != nil {
 		return nil, err
 	}
@@ -127,9 +135,10 @@ func (a *ApacheCtl) parseCmdOutput(params []string, regexpStr string, captureGro
 	return rItems, nil
 }
 
-func (a *ApacheCtl) execCmd(params []string) ([]byte, error) {
+func (a ApacheCtl) execCmd(params []string) ([]byte, error) {
 	cmd := exec.Command(a.binPath, params...)
 	output, err := cmd.CombinedOutput()
+
 	if err != nil {
 		return nil, fmt.Errorf("%v: %s", err, output)
 	}

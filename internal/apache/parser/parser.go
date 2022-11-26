@@ -8,9 +8,12 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/huandu/xstrings"
 	"github.com/r2dtools/webmng/internal/apache/apachectl"
 	"github.com/r2dtools/webmng/internal/apache/utils"
+	"github.com/r2dtools/webmng/pkg/aug"
 	commonutils "github.com/r2dtools/webmng/pkg/utils"
+	"github.com/r2dtools/webmng/pkg/webserver/reverter"
 	"github.com/unknwon/com"
 	"honnef.co/go/augeas"
 )
@@ -32,12 +35,12 @@ type Parser struct {
 	Augeas      augeas.Augeas
 	LoadedPaths map[string][]string
 	ServerRoot,
+	ConfigListen,
+	ConfigRoot,
 	lensModule,
-	configRoot,
 	hostRoot string
 	existingPaths map[string][]string
-	apachectl     *apachectl.ApacheCtl
-	configListen  string
+	apachectl     apachectl.ApacheCtl
 	variables     map[string]string
 	modules       map[string]bool
 }
@@ -49,17 +52,19 @@ type Parser struct {
 // exclude - whether or not to exclude directives based on variables and enabled modules
 func (p *Parser) FindDirective(directive, arg, start string, exclude bool) ([]string, error) {
 	if start == "" {
-		start = p.getAugPath(p.configRoot)
+		start = aug.GetAugPath(p.ConfigRoot)
 	}
 
 	regStr := fmt.Sprintf("(%s)|(%s)|(%s)", directive, "Include", "IncludeOptional")
 	matches, err := p.Augeas.Match(fmt.Sprintf("%s//*[self::directive=~regexp('%s', 'i')]", start, regStr))
+
 	if err != nil {
 		return nil, err
 	}
 
 	if exclude {
 		matches, err = p.excludeDirectives(matches)
+
 		if err != nil {
 			return nil, err
 		}
@@ -76,6 +81,7 @@ func (p *Parser) FindDirective(directive, arg, start string, exclude bool) ([]st
 
 	for _, match := range matches {
 		dir, err := p.Augeas.Get(match)
+
 		if err != nil {
 			return nil, err
 		}
@@ -84,16 +90,19 @@ func (p *Parser) FindDirective(directive, arg, start string, exclude bool) ([]st
 
 		if dir == "include" || dir == "includeoptional" {
 			nArg, err := p.GetArg(match + "/arg")
+
 			if err != nil {
 				return nil, err
 			}
 
 			nStart, err := p.getIncludePath(nArg)
+
 			if err != nil {
 				return nil, err
 			}
 
 			nMatches, err := p.FindDirective(directive, arg, nStart, exclude)
+
 			if err != nil {
 				return nil, err
 			}
@@ -103,6 +112,7 @@ func (p *Parser) FindDirective(directive, arg, start string, exclude bool) ([]st
 
 		if dir == strings.ToLower(directive) {
 			nMatches, err := p.Augeas.Match(match + argSuffix)
+
 			if err != nil {
 				return nil, err
 			}
@@ -126,6 +136,65 @@ func (p *Parser) AddDirective(augConfPath string, directive string, args []strin
 			return err
 		}
 	}
+
+	return nil
+}
+
+// AddDirectiveToIfModSSL adds directive to the end of the file given by augConfPath within IfModule ssl block
+func (p *Parser) AddDirectiveToIfModSSL(augConfPath string, directive string, args []string) error {
+	ifModPath, err := p.getIfModule(augConfPath, "mod_ssl.c", false)
+
+	if err != nil {
+		return err
+	}
+
+	if err = p.Augeas.Insert(ifModPath+"arg", "directive", false); err != nil {
+		return fmt.Errorf("could not insert directive within IfModule SSL block: %v", err)
+	}
+
+	nPath := ifModPath + "directive[1]"
+
+	if err = p.Augeas.Set(nPath, directive); err != nil {
+		return fmt.Errorf("could not set directive value within IfModule SSL block: %v", err)
+	}
+
+	if len(args) == 0 {
+		if err = p.Augeas.Set(nPath+"/arg", args[0]); err != nil {
+			return fmt.Errorf("could not set directive argument within IfModule SSL block: %v", err)
+		}
+	} else {
+		for i, arg := range args {
+			if err = p.Augeas.Set(fmt.Sprintf("%s/arg[%d]", nPath, i+1), arg); err != nil {
+				return fmt.Errorf("could not set directive argument within IfModule SSL block: %v", err)
+			}
+		}
+	}
+
+	return nil
+}
+
+// AddInclude adds Include directive for a configuration file
+func (p *Parser) AddInclude(mainConfigPath string, inclPath string) error {
+	matches, err := p.FindDirective("Include", inclPath, "", true)
+
+	if err != nil {
+		return fmt.Errorf("failed searching 'Include' directive in the config '%s': %v", mainConfigPath, err)
+	}
+
+	if len(matches) == 0 {
+		if err = p.AddDirective(aug.GetAugPath(mainConfigPath), "Include", []string{inclPath}); err != nil {
+			return fmt.Errorf("could not add 'Include' directive to config '%s': %v", mainConfigPath, err)
+		}
+	}
+
+	newDir := filepath.Dir(inclPath)
+	newFile := filepath.Base(inclPath)
+
+	if _, ok := p.existingPaths[newDir]; !ok {
+		p.existingPaths[newDir] = make([]string, 0)
+	}
+
+	p.existingPaths[newDir] = append(p.existingPaths[newDir], newFile)
 
 	return nil
 }
@@ -158,7 +227,7 @@ func (p *Parser) GetArg(match string) (string, error) {
 	return value, nil
 }
 
-// UpdateRuntimeVariables Updates Includes, Defines and Includes from httpd config dump data
+// UpdateRuntimeVariables Updates Includes, Defines and Modules from httpd config dump data
 func (p *Parser) UpdateRuntimeVariables() error {
 	if err := p.updateDefines(); err != nil {
 		return err
@@ -186,6 +255,12 @@ func (p *Parser) ResetModules() error {
 	return nil
 }
 
+func (p *Parser) ModuleExists(name string) bool {
+	_, ok := p.modules[name]
+
+	return ok
+}
+
 // IsFilenameExistInLoadedPaths checks if the file path is parsed by current Augeas parser config
 func (p *Parser) IsFilenameExistInLoadedPaths(filename string) bool {
 	return p.isFilenameExistInPaths(filename, p.LoadedPaths)
@@ -203,6 +278,86 @@ func (p *Parser) Close() {
 	}
 }
 
+func (p *Parser) Save(reverter reverter.Reverter) error {
+	unsavedFiles, err := p.getUnsavedFiles()
+
+	if err != nil {
+		return err
+	}
+
+	if len(unsavedFiles) == 0 {
+		return nil
+	}
+
+	if reverter != nil {
+		if err = reverter.BackupFiles(unsavedFiles); err != nil {
+			return err
+		}
+	}
+
+	if err = p.Augeas.Save(); err != nil {
+		return err
+	}
+
+	for _, unsavedFile := range unsavedFiles {
+		p.Augeas.Remove(fmt.Sprintf("/files/%s", unsavedFile))
+	}
+
+	if err = p.Augeas.Load(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// getIfModule returns the path to <IfModule mod> and creates one if it does not exist
+func (p *Parser) getIfModule(augConfPath string, mod string, begining bool) (string, error) {
+	ifMods, err := p.Augeas.Match(fmt.Sprintf("%s/IfModule/*[self::arg='%s']", augConfPath, mod))
+
+	if err != nil {
+		return "", fmt.Errorf("could not get IfModule directive: %v", err)
+	}
+
+	if len(ifMods) == 0 {
+		return p.createIfModule(augConfPath, mod, begining)
+	}
+
+	path, _, _ := xstrings.LastPartition(ifMods[0], "arg")
+
+	return path, nil
+}
+
+// CreateIfModule creates a new <IfMod mod> and returns its path
+func (p *Parser) createIfModule(augConfPath string, mod string, begining bool) (string, error) {
+	var argPath, retPath string
+	var err error
+
+	if begining {
+		argPath = fmt.Sprintf("%s/IfModule[1]/arg", augConfPath)
+
+		if err = p.Augeas.Insert(fmt.Sprintf("%s/directive[1]", augConfPath), "IfModule", true); err != nil {
+			return "", fmt.Errorf("could not insert IfModule directive: %v", err)
+		}
+
+		retPath = fmt.Sprintf("%s/IfModule[1]/", augConfPath)
+	} else {
+		path := fmt.Sprintf("%s/IfModule[last() + 1]", augConfPath)
+		argPath = fmt.Sprintf("%s/IfModule[last()]/arg", augConfPath)
+
+		if err = p.Augeas.Set(path, ""); err != nil {
+			return "", fmt.Errorf("could not set IfModule directive: %v", err)
+		}
+
+		retPath = fmt.Sprintf("%s/IfModule[last()]/", augConfPath)
+	}
+
+	if err = p.Augeas.Set(argPath, mod); err != nil {
+		return "", fmt.Errorf("could not set argument %s: %v", mod, err)
+	}
+
+	return retPath, nil
+}
+
 // excludeDirectives excludes directives that are not loaded into the configuration.
 func (p *Parser) excludeDirectives(matches []string) ([]string, error) {
 	var validMatches []string
@@ -216,6 +371,7 @@ func (p *Parser) excludeDirectives(matches []string) ([]string, error) {
 
 		for _, filter := range filters {
 			fPassed, err := p.isDirectivePassedFilter(match, filter)
+
 			if err != nil {
 				return nil, fmt.Errorf("failed to check the directive '%s' passed the filter '%s'", match, filter.Name)
 			}
@@ -301,9 +457,9 @@ func (p *Parser) getIncludePath(arg string) (string, error) {
 	info, err := os.Stat(arg)
 
 	if err == nil && info.IsDir() {
-		p.parseFile(filepath.Join(arg, "*"))
+		p.ParseFile(filepath.Join(arg, "*"))
 	} else {
-		p.parseFile(arg)
+		p.ParseFile(arg)
 	}
 
 	argParts := strings.Split(arg, "/")
@@ -319,7 +475,7 @@ func (p *Parser) getIncludePath(arg string) (string, error) {
 
 	arg = strings.Join(argParts, "/")
 
-	return p.getAugPath(arg), nil
+	return aug.GetAugPath(arg), nil
 }
 
 func (p *Parser) fnMatchToRegex(fnMatch string) string {
@@ -331,6 +487,7 @@ func (p *Parser) fnMatchToRegex(fnMatch string) string {
 // updateDefines Updates the map of known variables in the configuration
 func (p *Parser) updateDefines() error {
 	variables, err := p.apachectl.ParseDefines()
+
 	if err != nil {
 		return fmt.Errorf("could not parse defines: %v", err)
 	}
@@ -346,15 +503,15 @@ func (p *Parser) updateIncludes() error {
 	// directives to make sure we see the full include tree present in the
 	// configuration files
 	p.FindDirective("Include", "", "", true)
-
 	matches, err := p.apachectl.ParseIncludes()
+
 	if err != nil {
 		return fmt.Errorf("could not parse inlcludes: %v", err)
 	}
 
 	for _, match := range matches {
 		if !p.IsFilenameExistInLoadedPaths(match) {
-			p.parseFile(match)
+			p.ParseFile(match)
 		}
 	}
 
@@ -363,6 +520,7 @@ func (p *Parser) updateIncludes() error {
 
 func (p *Parser) updateModules() error {
 	matches, err := p.apachectl.ParseModules()
+
 	if err != nil {
 		return err
 	}
@@ -388,13 +546,14 @@ func (p *Parser) addModule(name string) {
 	}
 }
 
-func (p *Parser) parseFile(fPath string) error {
+func (p *Parser) ParseFile(fPath string) error {
 	useNew, removeOld := p.checkPath(fPath)
 	if !useNew {
 		return nil
 	}
 
 	includedPaths, err := p.Augeas.Match(fmt.Sprintf("/augeas/load/%s['%s' =~ glob(incl)]", p.lensModule, fPath))
+
 	if err != nil {
 		return err
 	}
@@ -405,6 +564,7 @@ func (p *Parser) parseFile(fPath string) error {
 		}
 
 		p.addTransform(fPath)
+
 		if err = p.Augeas.Load(); err != nil {
 			return err
 		}
@@ -505,11 +665,6 @@ func (p *Parser) convertPathFromServerRootToAbs(path string) string {
 	return path
 }
 
-// getAugPath returns Augeas path for the file full path
-func (p *Parser) getAugPath(fullPath string) string {
-	return fmt.Sprintf("/files/%s", fullPath)
-}
-
 func (p *Parser) isFilenameExistInPaths(filename string, paths map[string][]string) bool {
 	for dir, fNames := range paths {
 		for _, fName := range fNames {
@@ -572,6 +727,7 @@ func (p *Parser) removeTransform(fPath string) {
 // Add a transform to Augeas
 func (p *Parser) addTransform(fPath string) error {
 	lastInclude, err := p.Augeas.Match(fmt.Sprintf("/augeas/load/%s/incl [last()]", p.lensModule))
+
 	if err != nil {
 		return err
 	}
@@ -593,11 +749,12 @@ func (p *Parser) addTransform(fPath string) error {
 	return nil
 }
 
-func GetParser(apachectl *apachectl.ApacheCtl, lensModule, serverRoot, hostRoot, hostFiles string) (*Parser, error) {
+func GetParser(apachectl apachectl.ApacheCtl, lensModule, serverRoot, hostRoot, hostFiles string) (*Parser, error) {
 	var err error
 
 	if serverRoot == "" {
 		serverRoot, err = commonutils.FindFirstExistedDirectory(serverRootPaths)
+
 		if err != nil {
 			return nil, err
 		}
@@ -605,6 +762,7 @@ func GetParser(apachectl *apachectl.ApacheCtl, lensModule, serverRoot, hostRoot,
 
 	if hostRoot != "" {
 		hostRoot, err = filepath.Abs(hostRoot)
+
 		if err != nil {
 			return nil, err
 		}
@@ -612,13 +770,14 @@ func GetParser(apachectl *apachectl.ApacheCtl, lensModule, serverRoot, hostRoot,
 
 	// try to detect apache root config file path (ex. /etc/apache2/apache2.conf), ports.conf file path
 	configRoot, err := commonutils.FindAnyFilesInDirectory(serverRoot, configFiles)
+
 	if err != nil {
 		return nil, err
 	}
 
 	configListen := getConfigListen(serverRoot, configRoot)
-
 	aug, err := augeas.New("/", "", augeas.NoLoad|augeas.NoModlAutoload|augeas.EnableSpan)
+
 	if err != nil {
 		return nil, err
 	}
@@ -626,22 +785,23 @@ func GetParser(apachectl *apachectl.ApacheCtl, lensModule, serverRoot, hostRoot,
 	parser := Parser{
 		Augeas:        aug,
 		ServerRoot:    serverRoot,
-		configRoot:    configRoot,
+		ConfigListen:  configListen,
+		ConfigRoot:    configRoot,
 		hostRoot:      hostRoot,
 		existingPaths: make(map[string][]string),
 		LoadedPaths:   make(map[string][]string),
 		lensModule:    lensModule,
 		apachectl:     apachectl,
-		configListen:  configListen,
 		variables:     make(map[string]string),
 		modules:       make(map[string]bool),
 	}
 
-	if err = parser.parseFile(parser.configRoot); err != nil {
+	if err = parser.ParseFile(parser.ConfigRoot); err != nil {
 		parser.Close()
 		return nil, fmt.Errorf("could not parse webserver config: %v", err)
 	}
 
+	// load all variables, modules and parse all includes
 	if err = parser.UpdateRuntimeVariables(); err != nil {
 		return nil, err
 	}
@@ -656,7 +816,7 @@ func GetParser(apachectl *apachectl.ApacheCtl, lensModule, serverRoot, hostRoot,
 	if hostRoot != "" && hostFiles != "" {
 		vhostFilesPath := filepath.Join(hostRoot, hostFiles)
 
-		if err = parser.parseFile(vhostFilesPath); err != nil {
+		if err = parser.ParseFile(vhostFilesPath); err != nil {
 			return nil, err
 		}
 	}

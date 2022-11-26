@@ -1,6 +1,7 @@
 package aug
 
 import (
+	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -23,6 +24,11 @@ func GetFilePathFromAugPath(vhostPath string) string {
 // GetInternalAugPath returns file augeas internal path
 func GetInternalAugPath(vhostPath string) string {
 	return splitAugPath(vhostPath).InternalPath
+}
+
+// GetAugPath returns Augeas path for the file full path
+func GetAugPath(fullPath string) string {
+	return fmt.Sprintf("/files/%s", fullPath)
 }
 
 func splitAugPath(vhostPath string) augPathParts {

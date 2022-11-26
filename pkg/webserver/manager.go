@@ -6,12 +6,12 @@ const (
 )
 
 type WebServerManagerInterface interface {
-	GetHosts() ([]*Host, error)
+	GetHosts() ([]Host, error)
 	GetVersion() (string, error)
-	// GetHostsByServerName(serverName string) ([]HostInterface, error)
-	// EnableHost(host HostInterface) error
-	// DeployCertificate(serverName, certPath, certKeyPath, chainPath, fullChainPath string) error
-	// EnsurePortIsListening(port string, https bool) error
+	GetHostsByServerName(serverName string) ([]Host, error)
+	EnableHost(host *Host) error
+	DeployCertificate(serverName, certPath, certKeyPath, chainPath, fullChainPath string) error
 	CheckConfiguration() error
 	Restart() error
+	CommitChanges() error
 }

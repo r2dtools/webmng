@@ -24,12 +24,12 @@ type nginxHost struct {
 	Offset int
 }
 
-func (p *Parser) GetHosts() ([]*nginxHost, error) {
+func (p *Parser) GetHosts() ([]nginxHost, error) {
 	if err := p.Parse(); err != nil {
 		return nil, err
 	}
 
-	var hosts []*nginxHost
+	var hosts []nginxHost
 	serverBlocks := p.getServerBlocks()
 
 	for _, serverBlock := range serverBlocks {
@@ -67,7 +67,7 @@ func (p *Parser) GetHosts() ([]*nginxHost, error) {
 			},
 			Offset: serverBlock.block.Pos.Offset,
 		}
-		hosts = append(hosts, &host)
+		hosts = append(hosts, host)
 	}
 
 	return hosts, nil

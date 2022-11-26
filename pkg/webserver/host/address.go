@@ -53,18 +53,18 @@ func CreateHostAddressFromString(addrStr string) Address {
 	}
 }
 
-func (a *Address) IsWildcardPort() bool {
+func (a Address) IsWildcardPort() bool {
 	return a.Port == "*" || a.Port == ""
 }
 
 // GetHash returns addr hash based on host an port
-func (a *Address) GetHash() string {
+func (a Address) GetHash() string {
 	addr := fmt.Sprintf("%s:%s", a.Host, a.Port)
 
 	return base64.StdEncoding.EncodeToString([]byte(addr))
 }
 
-func (a *Address) ToString() string {
+func (a Address) ToString() string {
 	if a.Port != "" {
 		return fmt.Sprintf("%s:%s", a.Host, a.Port)
 	}
@@ -73,8 +73,8 @@ func (a *Address) ToString() string {
 }
 
 // GetAddressWithNewPort returns new a Address instance with changed port
-func (a *Address) GetAddressWithNewPort(port string) *Address {
-	return &Address{
+func (a Address) GetAddressWithNewPort(port string) Address {
+	return Address{
 		Host:   a.Host,
 		Port:   port,
 		IsIpv6: a.IsIpv6,
@@ -84,7 +84,7 @@ func (a *Address) GetAddressWithNewPort(port string) *Address {
 // GetNormalizedHost returns normalized host.
 // Normalization occurres only for ipv6 address. Ipv4 returns as is.
 // For example: [fd00:dead:beaf::1] -> fd00:dead:beaf:0:0:0:0:1
-func (a *Address) GetNormalizedHost() string {
+func (a Address) GetNormalizedHost() string {
 	if a.IsIpv6 {
 		return a.GetNormalizedIpv6()
 	}
@@ -94,7 +94,7 @@ func (a *Address) GetNormalizedHost() string {
 
 // GetNormalizedIpv6 returns normalized IPv6
 // For example: [fd00:dead:beaf::1] -> fd00:dead:beaf:0:0:0:0:1
-func (a *Address) GetNormalizedIpv6() string {
+func (a Address) GetNormalizedIpv6() string {
 	if !a.IsIpv6 {
 		return ""
 	}
@@ -102,7 +102,7 @@ func (a *Address) GetNormalizedIpv6() string {
 	return strings.Join(a.normalizeIpv6(a.Host), ":")
 }
 
-func (a *Address) IsEqual(b *Address) bool {
+func (a Address) IsEqual(b Address) bool {
 	if a.Port != b.Port {
 		return false
 	}
@@ -110,13 +110,13 @@ func (a *Address) IsEqual(b *Address) bool {
 	return a.GetNormalizedHost() == b.GetNormalizedHost()
 }
 
-func (a *Address) normalizeIpv6(addr string) []string {
+func (a Address) normalizeIpv6(addr string) []string {
 	addr = strings.Trim(addr, "[]")
 
 	return a.explodeIpv6(addr)
 }
 
-func (a *Address) explodeIpv6(addr string) []string {
+func (a Address) explodeIpv6(addr string) []string {
 	result := []string{"0", "0", "0", "0", "0", "0", "0", "0"}
 	addrParts := strings.Split(addr, ":")
 	var appendToEnd bool

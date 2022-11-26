@@ -14,18 +14,24 @@ type NginxManager struct {
 	logger   logger.LoggerInterface
 }
 
-func (m *NginxManager) GetHosts() ([]*webserver.Host, error) {
+func (m *NginxManager) GetHosts() ([]webserver.Host, error) {
 	nginxHosts, err := m.parser.GetHosts()
+
 	if err != nil {
 		return nil, err
 	}
 
-	var hosts []*webserver.Host
+	var hosts []webserver.Host
+
 	for _, nginxHost := range nginxHosts {
-		hosts = append(hosts, &nginxHost.Host)
+		hosts = append(hosts, nginxHost.Host)
 	}
 
 	return hosts, nil
+}
+
+func (m *NginxManager) GetHostsByServerName(serverName string) ([]webserver.Host, error) {
+	return nil, nil
 }
 
 func (m *NginxManager) GetVersion() (string, error) {
@@ -38,6 +44,18 @@ func (m *NginxManager) CheckConfiguration() error {
 
 func (m *NginxManager) Restart() error {
 	return m.nginxCli.Restart()
+}
+
+func (m *NginxManager) DeployCertificate(serverName, certPath, certKeyPath, chainPath, fullChainPath string) error {
+	return nil
+}
+
+func (m *NginxManager) EnableHost(host *webserver.Host) error {
+	return nil
+}
+
+func (m *NginxManager) CommitChanges() error {
+	return nil
 }
 
 func GetNginxManager(params map[string]string, logger logger.LoggerInterface) (*NginxManager, error) {
