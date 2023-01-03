@@ -14,17 +14,20 @@ func getVersionCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			code := cmd.Flag(flag.WebServerFlag).Value.String()
 			webServerManager, err := GetWebServerManager(code, nil)
+
 			if err != nil {
 				return writeOutput(cmd, err.Error())
 			}
 
 			version, err := webServerManager.GetVersion()
+
 			if err != nil {
 				return writeOutput(cmd, err.Error())
 			}
 
 			if isJson {
 				output, err := json.Marshal(map[string]string{"version": version})
+
 				if err != nil {
 					return writeOutput(cmd, err.Error())
 				}

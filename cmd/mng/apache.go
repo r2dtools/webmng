@@ -8,7 +8,7 @@ import (
 
 var apacheCmd = &cobra.Command{
 	Use:   "apache",
-	Short: "Manage apache webserver",
+	Short: "manage apache webserver",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		cmd.Flags().Set(flag.WebServerFlag, webserver.Apache)
 	},
@@ -22,4 +22,5 @@ func init() {
 	apacheCmd.AddCommand(getVersionCmd())
 	apacheCmd.AddCommand(getCheckCmd())
 	apacheCmd.AddCommand(getRestartCmd())
+	apacheCmd.AddCommand(getDeployCertificateCmd())
 }

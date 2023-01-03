@@ -26,6 +26,7 @@ func init() {
 
 func writeOutput(cmd *cobra.Command, output string) error {
 	_, err := cmd.OutOrStdout().Write([]byte(output))
+
 	if err != nil {
 		return err
 	}

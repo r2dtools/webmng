@@ -68,6 +68,14 @@ func (m *ApacheManager) CommitChanges() error {
 	return m.reverter.Commit()
 }
 
+func (m *ApacheManager) RollbackChanges() error {
+	return m.reverter.Rollback()
+}
+
+func (m *ApacheManager) SaveChanges() error {
+	return m.parser.Save(m.reverter)
+}
+
 // CheckConfiguration checks if apache configuration is correct
 func (m *ApacheManager) CheckConfiguration() error {
 	return m.apachectl.TestConfiguration()
@@ -109,6 +117,22 @@ func (m *ApacheManager) EnableHost(host *webserver.Host) error {
 }
 
 func (m *ApacheManager) DeployCertificate(serverName, certPath, certKeyPath, chainPath, fullChainPath string) error {
+	if certPath != "" {
+		certPath = filepath.Clean(certPath)
+	}
+
+	if certKeyPath != "" {
+		certKeyPath = filepath.Clean(certKeyPath)
+	}
+
+	if chainPath != "" {
+		chainPath = filepath.Clean(chainPath)
+	}
+
+	if fullChainPath != "" {
+		fullChainPath = filepath.Clean(fullChainPath)
+	}
+
 	aHosts, err := m.getApacheHostsByServerNameWithRequiredSSLConfigPart(serverName)
 
 	if err != nil {
@@ -174,6 +198,7 @@ func (m *ApacheManager) DeployCertificate(serverName, certPath, certKeyPath, cha
 			if err = m.parser.Augeas.Set(augCertPath[len(augCertPath)-1], fullChainPath); err != nil {
 				return fmt.Errorf("could not set certificate path for vhost '%s': %v", serverName, err)
 			}
+
 			if err = m.parser.Augeas.Set(augCertKeyPath[len(augCertKeyPath)-1], certKeyPath); err != nil {
 				return fmt.Errorf("could not set certificate key path for vhost '%s': %v", serverName, err)
 			}
@@ -268,7 +293,7 @@ func (m *ApacheManager) makeSslHosts(hosts []apacheHost) ([]apacheHost, error) {
 		sslFilePath, err := m.getSslHostFilePath(noSslFilePath)
 
 		if err != nil {
-			return nil, fmt.Errorf("could not get config file path for ssl virtual host: %v", err)
+			return nil, fmt.Errorf("could not get config file path for ssl host: %v", err)
 		}
 
 		originMatches, err := m.parser.Augeas.Match(fmt.Sprintf("/files%s//*[label()=~regexp('VirtualHost', 'i')]", apacheutils.Escape(sslFilePath)))
@@ -278,10 +303,10 @@ func (m *ApacheManager) makeSslHosts(hosts []apacheHost) ([]apacheHost, error) {
 		}
 
 		if err = m.copyCreateSslHostSkeleton(host, sslFilePath); err != nil {
-			return nil, fmt.Errorf("could not create config for ssl virtual host: %v", err)
+			return nil, fmt.Errorf("could not create config for ssl host: %v", err)
 		}
 
-		// Reload augeas to take into account the new vhost
+		// Reload augeas to take into account the new host
 		m.parser.Augeas.Load()
 		newMatches, err = m.parser.Augeas.Match(fmt.Sprintf("/files%s//*[label()=~regexp('VirtualHost', 'i')]", apacheutils.Escape(sslFilePath)))
 

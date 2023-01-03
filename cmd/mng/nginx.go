@@ -8,7 +8,7 @@ import (
 
 var nginxCmd = &cobra.Command{
 	Use:   "nginx",
-	Short: "Manage nginx webserver",
+	Short: "manage nginx webserver",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		cmd.Flags().Set(flag.WebServerFlag, webserver.Nginx)
 	},
@@ -22,4 +22,5 @@ func init() {
 	nginxCmd.AddCommand(getVersionCmd())
 	nginxCmd.AddCommand(getCheckCmd())
 	nginxCmd.AddCommand(getRestartCmd())
+	nginxCmd.AddCommand(getDeployCertificateCmd())
 }

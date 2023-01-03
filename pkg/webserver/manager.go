@@ -13,5 +13,7 @@ type WebServerManagerInterface interface {
 	DeployCertificate(serverName, certPath, certKeyPath, chainPath, fullChainPath string) error
 	CheckConfiguration() error
 	Restart() error
+	SaveChanges() error
 	CommitChanges() error
+	RollbackChanges() error
 }

@@ -58,6 +58,14 @@ func (m *NginxManager) CommitChanges() error {
 	return nil
 }
 
+func (m *NginxManager) RollbackChanges() error {
+	return nil
+}
+
+func (m *NginxManager) SaveChanges() error {
+	return nil
+}
+
 func GetNginxManager(params map[string]string, logger logger.LoggerInterface) (*NginxManager, error) {
 	options := nginxoptions.GetOptions(params)
 

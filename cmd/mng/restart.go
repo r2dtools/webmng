@@ -12,13 +12,16 @@ func getRestartCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			code := cmd.Flag(flag.WebServerFlag).Value.String()
 			webServerManager, err := GetWebServerManager(code, nil)
+
 			if err != nil {
 				return writeOutput(cmd, err.Error())
 			}
 
-			err = webServerManager.Restart()
+			if err = webServerManager.Restart(); err != nil {
+				return writeOutput(cmd, err.Error())
+			}
 
-			return writeOutput(cmd, err.Error())
+			return writelnOutput(cmd, "ok")
 		},
 	}
 
