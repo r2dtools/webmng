@@ -3,6 +3,7 @@ package apachesite
 import (
 	"fmt"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/r2dtools/webmng/pkg/utils"
 )
@@ -13,30 +14,32 @@ type ApacheSite struct {
 }
 
 // Enable enables site via a2ensite utility
-func (s *ApacheSite) Enable(siteConfigName string) error {
+func (s *ApacheSite) Enable(hostConfigPath string) error {
+	hostConfigName := filepath.Base(hostConfigPath)
 	if !utils.IsCommandExist(s.ensiteBin) {
-		return fmt.Errorf("could not enable site '%s': a2ensite utility is not available", siteConfigName)
+		return fmt.Errorf("could not enable host '%s': a2ensite utility is not available", hostConfigName)
 	}
 
-	_, err := s.execCmd(s.ensiteBin, []string{siteConfigName})
+	_, err := s.execCmd(s.ensiteBin, []string{hostConfigName})
 
 	if err != nil {
-		return fmt.Errorf("could not enable site '%s': %v", siteConfigName, err)
+		return fmt.Errorf("could not enable host '%s': %v", hostConfigName, err)
 	}
 
 	return nil
 }
 
 // Disable disables site via a2dissite utility
-func (s *ApacheSite) Disable(siteConfigName string) error {
+func (s *ApacheSite) Disable(hostConfigPath string) error {
+	hostConfigName := filepath.Base(hostConfigPath)
 	if !utils.IsCommandExist(s.dissiteBin) {
-		return fmt.Errorf("could not disable site '%s': a2dissite utility is not available", siteConfigName)
+		return fmt.Errorf("could not disable host '%s': a2dissite utility is not available", hostConfigName)
 	}
 
-	_, err := s.execCmd(s.dissiteBin, []string{siteConfigName})
+	_, err := s.execCmd(s.dissiteBin, []string{hostConfigName})
 
 	if err != nil {
-		return fmt.Errorf("could not disable site '%s': %v", siteConfigName, err)
+		return fmt.Errorf("could not disable host '%s': %v", hostConfigName, err)
 	}
 
 	return nil

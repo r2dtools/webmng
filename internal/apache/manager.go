@@ -85,10 +85,10 @@ func (m *ApacheManager) EnableHost(host *webserver.Host) error {
 	}
 
 	// First, try to enable host via a2ensite utility
-	err := m.apachesite.Enable(host.GetConfigName())
+	err := m.apachesite.Enable(host.FilePath)
 
 	if err == nil {
-		m.reverter.AddHostConfigToDisable(host.GetConfigName())
+		m.reverter.AddHostConfigToDisable(host.FilePath)
 		host.Enabled = true
 		return nil
 	} else {
@@ -1008,7 +1008,7 @@ func GetApacheManager(params map[string]string, logger logger.LoggerInterface) (
 		logger:        logger,
 		apacheVersion: version,
 		options:       options,
-		reverter:      reverter.NullReverter{},
+		reverter:      reverter.GetConfigReveter(aSite, logger),
 	}
 
 	return &manager, nil
