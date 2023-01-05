@@ -27,11 +27,8 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
-    - name: Build apache image
-      run: make build_apache_ubuntu_image
-    
-    - name: Build nginx image
-      run: make build_nginx_ubuntu_image
+    - name: Build images for tests
+      run: make build_all_images
 
     - name: Run tests
       run: make test

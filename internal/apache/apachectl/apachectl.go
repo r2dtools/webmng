@@ -6,6 +6,8 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+
+	"github.com/unknwon/com"
 )
 
 type ApacheCtl struct {
@@ -148,12 +150,19 @@ func (a ApacheCtl) execCmd(params []string) ([]byte, error) {
 
 func detectCtlCmd() (string, error) {
 	ctlCmds := []string{"apache2ctl", "httpd"}
+	ctlPaths := []string{"/usr/sbin/apache2ctl", "/etc/sbin/httpd", "/usr/sbin/httpd"}
 
 	for _, ctlCmd := range ctlCmds {
 		cmd := exec.Command("which", ctlCmd)
 
 		if _, err := cmd.Output(); err == nil {
 			return ctlCmd, nil
+		}
+	}
+
+	for _, ctlPath := range ctlPaths {
+		if com.IsFile(ctlPath) {
+			return ctlPath, nil
 		}
 	}
 

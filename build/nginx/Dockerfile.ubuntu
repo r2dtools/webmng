@@ -24,7 +24,7 @@ ARG nginxAvailableSitesDir=${nginxDir}/sites-available
 ARG nginxEnabledSitesDir=${nginxDir}/sites-enabled
 ARG nginxConfIoDir=${nginxDir}/nginxconfig.io
 
-RUN mkdir ${webmngDir} ${nginxConfIoDir}
+RUN mkdir -p ${webmngDir} ${nginxConfIoDir} /var/log
 WORKDIR  $webmngDir
 
 COPY ./test/nginx/integration/nginx.conf ${nginxDir}

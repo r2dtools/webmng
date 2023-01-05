@@ -23,11 +23,11 @@ ARG apacheDir=/etc/apache2
 ARG webmngDir=/opt/webmng
 ARG apacheAvailableSitesDir=${apacheDir}/sites-available
 
-RUN mkdir $webmngDir
+RUN mkdir -p $webmngDir /var/log
 WORKDIR  $webmngDir
 
 ADD ./test/apache/integration/sites-available ${apacheAvailableSitesDir}
-RUN ls -la .
+
 RUN a2ensite example3.com.conf \
     example3-ssl.com.conf \
     example2.com.conf \

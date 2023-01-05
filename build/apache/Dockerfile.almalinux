@@ -1,0 +1,40 @@
+FROM golang:1.18 AS golang
+
+FROM almalinux:latest
+
+COPY --from=golang /usr/local/go/ /usr/local/go/
+ENV PATH="/usr/local/go/bin:${PATH}"
+ENV GOPATH /go
+ENV PATH $GOPATH/bin:$PATH
+RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
+
+RUN yum -y update && yum -y install epel-release dnf-plugins-core
+RUN yum config-manager --set-enabled powertools
+
+RUN yum -y update && yum -y install \
+    mod_ssl \
+    httpd \
+    pkg-config \
+    augeas \
+    augeas-libs \
+    augeas-devel \
+    gcc \
+    libxml2-devel
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1585533
+RUN /usr/libexec/httpd-ssl-gencerts
+RUN chmod 644 /etc/pki/tls/private/localhost.key
+
+ARG apacheDir=/etc/httpd
+ARG webmngDir=/opt/webmng
+ARG apacheAvailableSitesDir=${apacheDir}/sites-available
+ARG apacheEnabledSitesDir=${apacheDir}/conf.d
+
+RUN mkdir -p $webmngDir /var/log
+WORKDIR  $webmngDir
+
+ADD ./test/apache/integration/sites-available ${apacheAvailableSitesDir}
+RUN ln -s ${apacheAvailableSitesDir}/*.conf ${apacheEnabledSitesDir}/
+RUN rm -f ${apacheEnabledSitesDir}/ssl.conf
+
+CMD ["go", "version"]

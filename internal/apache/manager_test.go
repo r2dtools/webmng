@@ -11,6 +11,7 @@ import (
 
 	"github.com/r2dtools/webmng/pkg/logger"
 	"github.com/r2dtools/webmng/pkg/webserver/host"
+	gopsutilhost "github.com/shirou/gopsutil/host"
 	"github.com/stretchr/testify/assert"
 	"github.com/unknwon/com"
 )
@@ -18,6 +19,18 @@ import (
 const (
 	apacheDir = "../../test/apache/integration"
 )
+
+var rhel bool
+
+func init() {
+	info, err := gopsutilhost.Info()
+
+	if err != nil {
+		panic(err)
+	}
+
+	rhel = info.PlatformFamily == "rhel" || info.Platform == "almalinux"
+}
 
 func TestGetHosts(t *testing.T) {
 	webServerManager := getWebServerManager(t)
@@ -33,7 +46,7 @@ func TestGetHosts(t *testing.T) {
 
 func TestGetHostNames(t *testing.T) {
 	webServerManager := getWebServerManager(t)
-	hostNames, err := webServerManager.getHostNames("/files/etc/apache2/sites-enabled/example2.com.conf/VirtualHost")
+	hostNames, err := webServerManager.getHostNames("/files" + getSitesEnabledPath() + "/example2.com.conf/VirtualHost")
 	assert.Nilf(t, err, "could not get host names: %v", err)
 	assert.Equal(t, "example2.com", hostNames.ServerName)
 	assert.Equal(t, 1, len(hostNames.ServerAliases))
@@ -42,7 +55,7 @@ func TestGetHostNames(t *testing.T) {
 
 func TestGetDocumentRoot(t *testing.T) {
 	webServerManager := getWebServerManager(t)
-	docRoot, err := webServerManager.getDocumentRoot("/files/etc/apache2/sites-enabled/example2.com.conf/VirtualHost")
+	docRoot, err := webServerManager.getDocumentRoot("/files" + getSitesEnabledPath() + "/example2.com.conf/VirtualHost")
 	assert.Nilf(t, err, "could not get document root: %v", err)
 	assert.Equal(t, "/var/www/html", docRoot)
 }
@@ -59,10 +72,10 @@ func TestEnsurePortIsListening(t *testing.T) {
 
 func TestGetSslHostFilePath(t *testing.T) {
 	webServerManager := getWebServerManager(t)
-	hostPath := "/etc/apache2/sites-enabled/example2.com.conf"
+	hostPath := getSitesEnabledPath() + "/example2.com.conf"
 	sslHostPath, err := webServerManager.getSslHostFilePath(hostPath)
 	assert.Nilf(t, err, "could not get ssl host file path: %v", err)
-	assert.Equal(t, "/etc/apache2/sites-available/example2.com-ssl.conf", sslHostPath)
+	assert.Equal(t, getSitesAvailablePath()+"/example2.com-ssl.conf", sslHostPath)
 }
 
 func TestGetHostBlockContent(t *testing.T) {
@@ -88,8 +101,8 @@ func TestGetSuitableHostsSingle(t *testing.T) {
 
 	webServerManager := getWebServerManager(t)
 	hostItems := []hostItem{
-		{"example2.com", "/etc/apache2/sites-available/example2.com-ssl.conf", "/var/www/html", true, false},
-		{"example.com", "/etc/apache2/sites-enabled/example-ssl.com.conf", "/var/www/html", true, true},
+		{"example2.com", getSitesAvailablePath() + "/example2.com-ssl.conf", "/var/www/html", true, false},
+		{"example.com", getSitesEnabledPath() + "/example-ssl.com.conf", "/var/www/html", true, true},
 	}
 
 	for _, hostItem := range hostItems {
@@ -125,9 +138,9 @@ func TestGetSuitableHostsMultiple(t *testing.T) {
 	addresses := []string{"[2002:5bcc:18fd:c:10:52:43:96]", "10.52.43.96"}
 
 	for _, sslHost := range sslHosts {
-		assert.Equal(t, "/etc/apache2/sites-enabled/example4-ssl.com.conf", sslHost.FilePath)
+		assert.Equal(t, getSitesEnabledPath()+"/example4-ssl.com.conf", sslHost.FilePath)
 		// Check that ssl config file realy exists
-		assert.Equal(t, true, com.IsFile("/etc/apache2/sites-enabled/example4-ssl.com.conf"))
+		assert.Equal(t, true, com.IsFile(getSitesEnabledPath()+"/example4-ssl.com.conf"))
 		assert.Equal(t, "example4.com", sslHost.ServerName)
 		assert.Equal(t, "/var/www/html", sslHost.DocRoot)
 		assert.Equal(t, true, sslHost.Ssl)
@@ -151,7 +164,7 @@ func TestDeployCertificate(t *testing.T) {
 	err = webServerManager.Restart()
 	assert.Nilf(t, err, "could not restart webserver after certificate deploy: %v", err)
 	// Check that ssl config file realy exists
-	sslConfigFilePath := "/etc/apache2/sites-enabled/example5.com-ssl.conf"
+	sslConfigFilePath := getSitesAvailablePath() + "/example5.com-ssl.conf"
 	assert.Equal(t, true, com.IsFile(sslConfigFilePath))
 
 	sslConfigContent, err := os.ReadFile(sslConfigFilePath)
@@ -179,7 +192,14 @@ func getHosts(t *testing.T, webServerManager *ApacheManager, serverName string) 
 }
 
 func getHostsFromJSON(t *testing.T) map[string]apacheHost {
-	hostsPath := apacheDir + "/hosts.json"
+	var hostsPath string
+
+	if rhel {
+		hostsPath = apacheDir + "/hosts-httpd.json"
+	} else {
+		hostsPath = apacheDir + "/hosts-apache.json"
+	}
+
 	assert.FileExists(t, hostsPath, "could not open hosts file")
 	data, err := os.ReadFile(hostsPath)
 	assert.Nilf(t, err, "could not read hosts file: %v", err)
@@ -207,4 +227,20 @@ func getHostConfigContent(t *testing.T, name string) string {
 func prepareStringToCompare(str string) string {
 	re := regexp.MustCompile(`[\r\n\s]`)
 	return re.ReplaceAllString(string(str), "")
+}
+
+func getSitesEnabledPath() string {
+	if rhel {
+		return "/etc/httpd/conf.d"
+	}
+
+	return "/etc/apache2/sites-enabled"
+}
+
+func getSitesAvailablePath() string {
+	if rhel {
+		return "/etc/httpd/sites-available"
+	}
+
+	return "/etc/apache2/sites-available"
 }
