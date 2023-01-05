@@ -1,4 +1,3 @@
 .vscode
 .github
-build/*
-!build/.gitkeep
+build/webmng

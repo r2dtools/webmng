@@ -1,0 +1,39 @@
+FROM golang:1.18-alpine AS golang
+
+FROM ubuntu:22.04
+
+COPY --from=golang /usr/local/go/ /usr/local/go/
+ENV PATH="/usr/local/go/bin:${PATH}"
+ENV GOPATH /go
+ENV PATH $GOPATH/bin:$PATH
+RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
+
+RUN apt update && apt install -y \
+    apache2 \
+    pkg-config \
+    augeas-tools \
+    libaugeas-dev \
+    musl-dev \
+    build-essential \
+    ca-certificates \
+    && update-ca-certificates
+RUN a2enmod ssl
+
+ARG apacheDir=/etc/apache2
+ARG webmngDir=/opt/webmng
+ARG apacheAvailableSitesDir=${apacheDir}/sites-available
+
+RUN mkdir $webmngDir
+WORKDIR  $webmngDir
+
+ADD ./test/apache/integration/sites-available ${apacheAvailableSitesDir}
+RUN ls -la .
+RUN a2ensite example3.com.conf \
+    example3-ssl.com.conf \
+    example2.com.conf \
+    example-ssl.com.conf \
+    example4-ssl.com.conf \
+    example5.com.conf \
+    && a2dissite 000-default.conf
+
+CMD ["go", "version"]
