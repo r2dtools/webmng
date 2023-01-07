@@ -162,7 +162,7 @@ func TestDeployCertificate(t *testing.T) {
 	err = webServerManager.Restart()
 	assert.Nilf(t, err, "could not restart webserver after certificate deploy: %v", err)
 	// Check that ssl config file realy exists
-	sslConfigFilePath := getSitesAvailablePath() + "/example5.com-ssl.conf"
+	sslConfigFilePath := getSitesEnabledPath() + "/example5.com-ssl.conf"
 	assert.Equal(t, true, com.IsFile(sslConfigFilePath))
 
 	sslConfigContent, err := os.ReadFile(sslConfigFilePath)
