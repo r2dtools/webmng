@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver"
+	"github.com/shirou/gopsutil/host"
 	"github.com/unknwon/com"
 )
 
@@ -81,4 +82,13 @@ func StrSlicesDifference(a, b []string) []string {
 	}
 
 	return diff
+}
+
+func IsRhelOsFamily() (bool, error) {
+	info, err := host.Info()
+	if err != nil {
+		return false, err
+	}
+
+	return info.PlatformFamily == "rhel" || info.Platform == "almalinux", nil
 }

@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	"github.com/r2dtools/webmng/pkg/logger"
+	"github.com/r2dtools/webmng/pkg/utils"
 	"github.com/r2dtools/webmng/pkg/webserver/host"
-	gopsutilhost "github.com/shirou/gopsutil/host"
 	"github.com/stretchr/testify/assert"
 	"github.com/unknwon/com"
 )
@@ -23,13 +23,11 @@ const (
 var rhel bool
 
 func init() {
-	info, err := gopsutilhost.Info()
-
+	var err error
+	rhel, err = utils.IsRhelOsFamily()
 	if err != nil {
 		panic(err)
 	}
-
-	rhel = info.PlatformFamily == "rhel" || info.Platform == "almalinux"
 }
 
 func TestGetHosts(t *testing.T) {

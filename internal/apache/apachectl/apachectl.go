@@ -14,17 +14,10 @@ type ApacheCtl struct {
 	binPath string
 }
 
-func GetApacheCtl(binPath string) (ApacheCtl, error) {
+func GetApacheCtl() (ApacheCtl, error) {
 	var apacheCtl ApacheCtl
 
-	if binPath != "" {
-		apacheCtl.binPath = binPath
-
-		return apacheCtl, nil
-	}
-
 	binPath, err := detectCtlCmd()
-
 	if err != nil {
 		return apacheCtl, err
 	}
@@ -45,7 +38,17 @@ func (a ApacheCtl) ParseIncludes() ([]string, error) {
 func (a ApacheCtl) ParseModules() ([]string, error) {
 	params := []string{"-t", "-D", "DUMP_MODULES"}
 
-	return a.parseCmdOutput(params, `(.*)_module`, 1)
+	output, err := a.parseCmdOutput(params, `(.*)_module`, 1)
+	if err != nil {
+		return nil, err
+	}
+
+	var modules []string
+	for _, item := range output {
+		modules = append(modules, strings.TrimSpace(item))
+	}
+
+	return modules, nil
 }
 
 // ParseDefines returns a map of the defined variables.

@@ -984,7 +984,7 @@ func (m *ApacheManager) enableModule(module string, temp bool) error {
 func GetApacheManager(params map[string]string, logger logger.LoggerInterface) (*ApacheManager, error) {
 	options := apacheoptions.GetOptions(params)
 
-	aCtl, err := apachectl.GetApacheCtl(options.Get(apacheoptions.ApacheCtl))
+	aCtl, err := apachectl.GetApacheCtl()
 	if err != nil {
 		return nil, err
 	}
