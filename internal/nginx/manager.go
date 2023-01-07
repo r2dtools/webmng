@@ -9,7 +9,7 @@ import (
 )
 
 type NginxManager struct {
-	nginxCli *nginxcli.NginxCli
+	nginxCli nginxcli.NginxCli
 	parser   *parser.Parser
 	logger   logger.LoggerInterface
 }
@@ -69,7 +69,7 @@ func (m *NginxManager) SaveChanges() error {
 func GetNginxManager(params map[string]string, logger logger.LoggerInterface) (*NginxManager, error) {
 	options := nginxoptions.GetOptions(params)
 
-	nginxCli, err := nginxcli.GetNginxCli(options.Get(nginxoptions.NginxBinPath))
+	nginxCli, err := nginxcli.GetNginxCli()
 	if err != nil {
 		return nil, err
 	}

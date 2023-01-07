@@ -4,7 +4,6 @@ import (
 	"regexp"
 	"testing"
 
-	nginxoptions "github.com/r2dtools/webmng/internal/nginx/options"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,9 +29,8 @@ func TestGetVersion(t *testing.T) {
 	assert.Equal(t, true, reg.MatchString(version), "invalid version: %s", version)
 }
 
-func getNginxCli(t *testing.T) *NginxCli {
-	options := nginxoptions.GetOptions(nil)
-	cli, err := GetNginxCli(options.Get(nginxoptions.NginxBinPath))
+func getNginxCli(t *testing.T) NginxCli {
+	cli, err := GetNginxCli()
 	assert.Nilf(t, err, "could not create nginx cli: %v", err)
 
 	return cli

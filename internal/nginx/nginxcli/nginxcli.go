@@ -16,7 +16,7 @@ type NginxCli struct {
 	binPath string
 }
 
-func (n *NginxCli) Restart() error {
+func (n NginxCli) Restart() error {
 	if _, err := n.execCmd([]string{"-s", "reload"}); err != nil {
 		return err
 	}
@@ -24,7 +24,7 @@ func (n *NginxCli) Restart() error {
 	return nil
 }
 
-func (n *NginxCli) TestConfiguration() error {
+func (n NginxCli) TestConfiguration() error {
 	if _, err := n.execCmd([]string{"-t"}); err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func (n *NginxCli) TestConfiguration() error {
 	return nil
 }
 
-func (n *NginxCli) GetVersion() (string, error) {
+func (n NginxCli) GetVersion() (string, error) {
 	params := []string{"-v"}
 	result, err := n.parseCmdOutput(params, `nginx/(\d+\.\d+\.\d+)`, 1)
 	if err != nil {
@@ -42,7 +42,7 @@ func (n *NginxCli) GetVersion() (string, error) {
 	return result[0], nil
 }
 
-func (n *NginxCli) parseCmdOutput(params []string, regexpStr string, captureGroup uint) ([]string, error) {
+func (n NginxCli) parseCmdOutput(params []string, regexpStr string, captureGroup uint) ([]string, error) {
 	output, err := n.execCmd(params)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (n *NginxCli) parseCmdOutput(params []string, regexpStr string, captureGrou
 	return rItems, nil
 }
 
-func (n *NginxCli) execCmd(params []string) ([]byte, error) {
+func (n NginxCli) execCmd(params []string) ([]byte, error) {
 	cmd := exec.Command(n.binPath, params...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -73,17 +73,13 @@ func (n *NginxCli) execCmd(params []string) ([]byte, error) {
 	return output, nil
 }
 
-func GetNginxCli(binPath string) (*NginxCli, error) {
-	if binPath != "" {
-		return &NginxCli{binPath: binPath}, nil
-	}
-
+func GetNginxCli() (NginxCli, error) {
 	binPath, err := detectNginxCmd()
 	if err != nil {
-		return nil, err
+		return NginxCli{}, err
 	}
 
-	return &NginxCli{binPath: binPath}, nil
+	return NginxCli{binPath: binPath}, nil
 }
 
 func detectNginxCmd() (string, error) {
