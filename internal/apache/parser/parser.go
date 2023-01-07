@@ -22,7 +22,6 @@ const (
 	argVarRegex = `\$\{[^ \}]*}`
 )
 
-var serverRootPaths = []string{"/etc/httpd", "/etc/apache2"}
 var configFiles = []string{"apache2.conf", "httpd.conf", "conf/httpd.conf"}
 var fnMatchChars = []string{"*", "?", "\\", "[", "]"}
 
@@ -751,14 +750,6 @@ func (p *Parser) addTransform(fPath string) error {
 
 func GetParser(apachectl apachectl.ApacheCtl, lensModule, serverRoot, hostRoot, hostFiles string) (*Parser, error) {
 	var err error
-
-	if serverRoot == "" {
-		serverRoot, err = commonutils.FindFirstExistedDirectory(serverRootPaths)
-
-		if err != nil {
-			return nil, err
-		}
-	}
 
 	if hostRoot != "" {
 		hostRoot, err = filepath.Abs(hostRoot)

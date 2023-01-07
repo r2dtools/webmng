@@ -10,6 +10,7 @@ import (
 
 	"github.com/r2dtools/webmng/internal/apache/apachectl"
 	"github.com/r2dtools/webmng/internal/apache/apachesite"
+	apachehostmanager "github.com/r2dtools/webmng/internal/apache/hostmanager"
 	apacheoptions "github.com/r2dtools/webmng/internal/apache/options"
 	"github.com/r2dtools/webmng/internal/apache/parser"
 	apacheutils "github.com/r2dtools/webmng/internal/apache/utils"
@@ -19,6 +20,7 @@ import (
 	"github.com/r2dtools/webmng/pkg/utils"
 	"github.com/r2dtools/webmng/pkg/webserver"
 	"github.com/r2dtools/webmng/pkg/webserver/host"
+	"github.com/r2dtools/webmng/pkg/webserver/hostmanager"
 	"github.com/r2dtools/webmng/pkg/webserver/reverter"
 	"github.com/unknwon/com"
 	"golang.org/x/exp/slices"
@@ -28,9 +30,17 @@ const (
 	minApacheVersion = "2.4.0"
 )
 
+var serverRootPaths = []string{"/etc/httpd", "/etc/apache2"}
+var enabledHostConfigDirNames = []string{"sites-enabled", "conf.d"}
+
+type HostManager interface {
+	Enable(hostConfigPath string) error
+	Disable(hostConfigPath string) error
+}
+
 type ApacheManager struct {
 	apachectl     apachectl.ApacheCtl
-	apachesite    *apachesite.ApacheSite
+	hostManager   HostManager
 	parser        *parser.Parser
 	logger        logger.LoggerInterface
 	apacheVersion string
@@ -92,26 +102,13 @@ func (m *ApacheManager) EnableHost(host *webserver.Host) error {
 		return nil
 	}
 
-	// First, try to enable host via a2ensite utility
-	err := m.apachesite.Enable(host.FilePath)
-
-	if err == nil {
-		m.reverter.AddHostConfigToDisable(host.FilePath)
-		host.Enabled = true
-		return nil
-	} else {
-		m.logger.Debug(err.Error())
+	err := m.hostManager.Enable(host.FilePath)
+	if err != nil {
+		return err
 	}
 
-	// If host could not be enabled via a2ensite, than try to enable it via Include directive in apache config
-	if !m.parser.IsFilenameExistInOriginalPaths(host.FilePath) {
-		m.logger.Debug(fmt.Sprintf("try to enable host '%s' via 'include' directive.", host.FilePath))
-		if err := m.parser.AddInclude(m.parser.ConfigRoot, host.FilePath); err != nil {
-			return fmt.Errorf("could not enable host '%s': %v", host.FilePath, err)
-		}
-
-		host.Enabled = true
-	}
+	host.Enabled = true
+	m.reverter.AddHostConfigToDisable(host.FilePath)
 
 	return nil
 }
@@ -986,33 +983,34 @@ func (m *ApacheManager) enableModule(module string, temp bool) error {
 
 func GetApacheManager(params map[string]string, logger logger.LoggerInterface) (*ApacheManager, error) {
 	options := apacheoptions.GetOptions(params)
-	aCtl, err := apachectl.GetApacheCtl(options.Get(apacheoptions.ApacheCtl))
 
+	aCtl, err := apachectl.GetApacheCtl(options.Get(apacheoptions.ApacheCtl))
 	if err != nil {
 		return nil, err
 	}
 
-	aSite := apachesite.GetApacheSite(options.Get(apacheoptions.ApacheEnsite), options.Get(apacheoptions.ApacheDissite))
+	serverRootDirectory, err := getServerRootDirectory(options)
+	if err != nil {
+		return nil, err
+	}
+
 	parser, err := parser.GetParser(
 		aCtl,
 		"Httpd",
-		options.Get(apacheoptions.ServerRoot),
+		serverRootDirectory,
 		options.Get(apacheoptions.HostRoot),
 		options.Get(apacheoptions.HostFiles),
 	)
-
 	if err != nil {
 		return nil, err
 	}
 
 	version, err := aCtl.GetVersion()
-
 	if err != nil {
 		return nil, err
 	}
 
 	isVersionSupported, err := utils.CheckMinVersion(version, minApacheVersion)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1026,15 +1024,65 @@ func GetApacheManager(params map[string]string, logger logger.LoggerInterface) (
 		return nil, err
 	}
 
+	enabledHostConfigDirectory, err := getEnabledHostConfigDirectory(serverRootDirectory)
+	if err != nil {
+		return nil, err
+	}
+
+	hostManager := getHostManager(parser, enabledHostConfigDirectory)
 	manager := ApacheManager{
 		apachectl:     aCtl,
-		apachesite:    aSite,
+		hostManager:   hostManager,
 		parser:        parser,
 		logger:        logger,
 		apacheVersion: version,
 		options:       options,
-		reverter:      reverter.GetConfigReveter(aSite, logger),
+		reverter:      reverter.GetConfigReveter(hostManager, logger),
 	}
 
 	return &manager, nil
+}
+
+func getServerRootDirectory(options options.Options) (string, error) {
+	serverRoot := options.Get(apacheoptions.ServerRoot)
+
+	if serverRoot != "" {
+		if !com.IsDir(serverRoot) {
+			return "", fmt.Errorf("invalid server root directory '%s'", serverRoot)
+		}
+
+		return serverRoot, nil
+	}
+
+	serverRoot, err := utils.FindFirstExistedDirectory(serverRootPaths)
+	if err != nil {
+		return "", fmt.Errorf("unable to find find server root directory: %v", err)
+	}
+
+	return serverRoot, nil
+}
+
+func getEnabledHostConfigDirectory(serverRootDir string) (string, error) {
+	for _, dirName := range enabledHostConfigDirNames {
+		enabledHostDir := filepath.Join(serverRootDir, dirName)
+		if com.IsDir(enabledHostDir) {
+			return enabledHostDir, nil
+		}
+	}
+
+	return "", errors.New("unable to find enabled hosts configuration directory")
+}
+
+func getHostManager(parser *parser.Parser, enabledHostConfigDirectory string) HostManager {
+	aSite, err := apachesite.GetApacheSite()
+	if err == nil {
+		return aSite
+	}
+
+	defaultHostManager, err := hostmanager.GetHostManager(enabledHostConfigDirectory)
+	if err == nil {
+		return defaultHostManager
+	}
+
+	return apachehostmanager.GetHostManager(parser)
 }

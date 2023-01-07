@@ -28,14 +28,18 @@ func CheckMinVersion(version, minVersion string) (bool, error) {
 	return c.Check(v), nil
 }
 
-// IsCommandExist checks if command exists via which linus command
-func IsCommandExist(name string) bool {
+// GetCommandPath returns path to the binary via "which" linux command
+// returns path to the command binary
+func GetCommandBinPath(name string) (string, error) {
+	var output []byte
+	var err error
 	cmd := exec.Command("which", name)
-	if _, err := cmd.Output(); err == nil {
-		return true
+
+	if output, err = cmd.Output(); err != nil {
+		return "", err
 	}
 
-	return false
+	return strings.Trim(string(output), "\n"), nil
 }
 
 func FindFirstExistedDirectory(directories []string) (string, error) {

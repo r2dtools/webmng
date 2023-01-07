@@ -13,10 +13,6 @@ const (
 	ApacheCtl = "ctl"
 	// SslVhostlExt postfix for config files of created SSL virtual hosts
 	SslVhostlExt = "ssl_vhost_ext"
-	// ApacheEnsite is a command for a2ensite command or a pth to a2ensite bin
-	ApacheEnsite = "apache_ensite"
-	// ApacheDissite is a command for a2dissite command or a pth to a2dissite bin
-	ApacheDissite = "apache_dissite"
 )
 
 func GetOptions(params map[string]string) options.Options {
@@ -34,8 +30,6 @@ func GetDefaults() map[string]string {
 	defaults[HostFiles] = "*"
 	defaults[ApacheCtl] = ""
 	defaults[SslVhostlExt] = "-ssl.conf"
-	defaults[ApacheEnsite] = "a2ensite"
-	defaults[ApacheDissite] = "a2dissite"
 
 	return defaults
 }

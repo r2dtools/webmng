@@ -15,9 +15,10 @@ func TestCheckMinVersion(t *testing.T) {
 	assert.Equal(t, false, result)
 }
 
-func TestIsCommandExist(t *testing.T) {
-	result := IsCommandExist("uname")
-	assert.Equal(t, true, result)
-	result = IsCommandExist("fakeCommand")
-	assert.Equal(t, false, result)
+func TestGetCommandPath(t *testing.T) {
+	path, err := GetCommandBinPath("uname")
+	assert.Nil(t, err)
+	assert.Equal(t, "/usr/bin/uname", path)
+	_, err = GetCommandBinPath("fakeCommand")
+	assert.NotNil(t, err)
 }

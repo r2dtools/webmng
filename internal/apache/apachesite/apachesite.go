@@ -1,11 +1,13 @@
 package apachesite
 
 import (
+	"errors"
 	"fmt"
 	"os/exec"
 	"path/filepath"
 
 	"github.com/r2dtools/webmng/pkg/utils"
+	"github.com/unknwon/com"
 )
 
 // Site implements functionality for site enabling/disabling
@@ -14,15 +16,10 @@ type ApacheSite struct {
 }
 
 // Enable enables site via a2ensite utility
-func (s *ApacheSite) Enable(hostConfigPath string) error {
+func (s ApacheSite) Enable(hostConfigPath string) error {
 	hostConfigName := filepath.Base(hostConfigPath)
-	if !utils.IsCommandExist(s.ensiteBin) {
-		return fmt.Errorf("could not enable host '%s': a2ensite utility is not available", hostConfigName)
-	}
 
-	_, err := s.execCmd(s.ensiteBin, []string{hostConfigName})
-
-	if err != nil {
+	if _, err := s.execCmd(s.ensiteBin, []string{hostConfigName}); err != nil {
 		return fmt.Errorf("could not enable host '%s': %v", hostConfigName, err)
 	}
 
@@ -30,22 +27,15 @@ func (s *ApacheSite) Enable(hostConfigPath string) error {
 }
 
 // Disable disables site via a2dissite utility
-func (s *ApacheSite) Disable(hostConfigPath string) error {
-	hostConfigName := filepath.Base(hostConfigPath)
-	if !utils.IsCommandExist(s.dissiteBin) {
-		return fmt.Errorf("could not disable host '%s': a2dissite utility is not available", hostConfigName)
-	}
-
-	_, err := s.execCmd(s.dissiteBin, []string{hostConfigName})
-
-	if err != nil {
+func (s ApacheSite) Disable(hostConfigName string) error {
+	if _, err := s.execCmd(s.dissiteBin, []string{hostConfigName}); err != nil {
 		return fmt.Errorf("could not disable host '%s': %v", hostConfigName, err)
 	}
 
 	return nil
 }
 
-func (s *ApacheSite) execCmd(command string, params []string) ([]byte, error) {
+func (s ApacheSite) execCmd(command string, params []string) ([]byte, error) {
 	cmd := exec.Command(command, params...)
 	output, err := cmd.Output()
 
@@ -56,6 +46,33 @@ func (s *ApacheSite) execCmd(command string, params []string) ([]byte, error) {
 	return output, nil
 }
 
-func GetApacheSite(ensiteBin, dissiteBin string) *ApacheSite {
-	return &ApacheSite{ensiteBin: ensiteBin, dissiteBin: dissiteBin}
+func GetApacheSite() (ApacheSite, error) {
+	ensiteBinPaths := []string{"/usr/sbin/a2ensite"}
+	dissiteBinPaths := []string{"/usr/sbin/a2dissite"}
+
+	ensiteBin, err := utils.GetCommandBinPath("a2ensite")
+	if err != nil {
+		for _, cmdPath := range ensiteBinPaths {
+			if com.IsFile(cmdPath) {
+				ensiteBin = cmdPath
+				break
+			}
+		}
+	}
+
+	dissiteBin, err := utils.GetCommandBinPath("a2dissite")
+	if err != nil {
+		for _, cmdPath := range dissiteBinPaths {
+			if !com.IsFile(cmdPath) {
+				dissiteBin = cmdPath
+				break
+			}
+		}
+	}
+
+	if ensiteBin == "" || dissiteBin == "" {
+		return ApacheSite{}, errors.New("a2ensite/a2dissite binaries do not exist")
+	}
+
+	return ApacheSite{ensiteBin: ensiteBin, dissiteBin: dissiteBin}, nil
 }
