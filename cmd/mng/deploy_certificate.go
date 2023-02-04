@@ -42,7 +42,7 @@ func getDeployCertificateCmd() *cobra.Command {
 			}
 
 			if err = webServerManager.CheckConfiguration(); err != nil {
-				err = fmt.Errorf("could not deploy certificate to host '%s': apache configuration is invalid: %v", hostName, err)
+				err = fmt.Errorf("could not deploy certificate to host '%s': nginx configuration is invalid: %v", hostName, err)
 
 				return rollbackChanges(webServerManager, cmd, err)
 			}

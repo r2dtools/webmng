@@ -5,12 +5,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/r2dtools/webmng/internal/nginx/parser"
+	"github.com/r2dtools/webmng/internal/nginx/rawparser"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDump(t *testing.T) {
-	config := &parser.Config{}
+	config := &rawparser.Config{}
 	configData, err := os.ReadFile("../../../test/nginx/unit/nginx.conf.json")
 	assert.Nilf(t, err, "could not read file with parsed nginx config: %v", err)
 

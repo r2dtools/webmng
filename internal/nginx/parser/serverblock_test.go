@@ -3,12 +3,13 @@ package parser
 import (
 	"testing"
 
+	"github.com/r2dtools/webmng/internal/nginx/rawparser"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetBaseDirectives(t *testing.T) {
 	type testData struct {
-		block               *Block
+		block               *rawparser.Block
 		expectedServerNames []string
 	}
 
@@ -22,21 +23,21 @@ func TestGetBaseDirectives(t *testing.T) {
 			expectedServerNames: []string{},
 		},
 		{
-			block:               &Block{Content: nil},
+			block:               &rawparser.Block{Content: nil},
 			expectedServerNames: []string{},
 		},
 		{
-			block:               &Block{Content: &BlockContent{}},
+			block:               &rawparser.Block{Content: &rawparser.BlockContent{}},
 			expectedServerNames: []string{},
 		},
 		{
-			block: &Block{
-				Content: &BlockContent{
-					Entries: []*Entry{
+			block: &rawparser.Block{
+				Content: &rawparser.BlockContent{
+					Entries: []*rawparser.Entry{
 						nil,
 						{
 							Identifier: "server_name",
-							Values: []*Value{
+							Values: []*rawparser.Value{
 								{Expression: serverName},
 								{Expression: serverAlias},
 							},
@@ -57,13 +58,13 @@ func TestGetBaseDirectives(t *testing.T) {
 		assert.ElementsMatch(t, item.expectedServerNames, serverBlock.getServerNames(), "invalid server names received")
 	}
 
-	docRootBlock := &Block{
-		Content: &BlockContent{
-			Entries: []*Entry{
+	docRootBlock := &rawparser.Block{
+		Content: &rawparser.BlockContent{
+			Entries: []*rawparser.Entry{
 				nil,
 				{
 					Identifier: "root",
-					Values: []*Value{
+					Values: []*rawparser.Value{
 						{Expression: docRoot},
 					},
 				},
@@ -76,30 +77,30 @@ func TestGetBaseDirectives(t *testing.T) {
 
 func TestGetListens(t *testing.T) {
 	type testData struct {
-		block    *Block
+		block    *rawparser.Block
 		expected []listen
 	}
 
 	items := []testData{
 		{
-			block: &Block{
-				Content: &BlockContent{
-					Entries: []*Entry{
+			block: &rawparser.Block{
+				Content: &rawparser.BlockContent{
+					Entries: []*rawparser.Entry{
 						{
 							Identifier: "ssl",
-							Values: []*Value{
+							Values: []*rawparser.Value{
 								{Expression: "on"},
 							},
 						},
 						{
 							Identifier: "listen",
-							Values: []*Value{
+							Values: []*rawparser.Value{
 								{Expression: "8443"},
 							},
 						},
 						{
 							Identifier: "listen",
-							Values: []*Value{
+							Values: []*rawparser.Value{
 								{Expression: "[::]:8443"},
 							},
 						},
@@ -118,12 +119,12 @@ func TestGetListens(t *testing.T) {
 			},
 		},
 		{
-			block: &Block{
-				Content: &BlockContent{
-					Entries: []*Entry{
+			block: &rawparser.Block{
+				Content: &rawparser.BlockContent{
+					Entries: []*rawparser.Entry{
 						{
 							Identifier: "listen",
-							Values: []*Value{
+							Values: []*rawparser.Value{
 								{Expression: "443"},
 								{Expression: "ssl"},
 								{Expression: "http2"},
@@ -131,7 +132,7 @@ func TestGetListens(t *testing.T) {
 						},
 						{
 							Identifier: "listen",
-							Values: []*Value{
+							Values: []*rawparser.Value{
 								{Expression: "[::]:443"},
 								{Expression: "ssl"},
 								{Expression: "http2"},
@@ -152,18 +153,18 @@ func TestGetListens(t *testing.T) {
 			},
 		},
 		{
-			block: &Block{
-				Content: &BlockContent{
-					Entries: []*Entry{
+			block: &rawparser.Block{
+				Content: &rawparser.BlockContent{
+					Entries: []*rawparser.Entry{
 						{
 							Identifier: "listen",
-							Values: []*Value{
+							Values: []*rawparser.Value{
 								{Expression: "80"},
 							},
 						},
 						{
 							Identifier: "listen",
-							Values: []*Value{
+							Values: []*rawparser.Value{
 								{Expression: "[::]:80"},
 							},
 						},

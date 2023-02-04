@@ -1,9 +1,13 @@
 package parser
 
-import "strings"
+import (
+	"strings"
 
-func getBlockEntriesByIdentifier(block *Block, identifier string) []*Entry {
-	entries := []*Entry{}
+	"github.com/r2dtools/webmng/internal/nginx/rawparser"
+)
+
+func getBlockEntriesByIdentifier(block *rawparser.Block, identifier string) []*rawparser.Entry {
+	entries := []*rawparser.Entry{}
 
 	if block == nil || block.Content == nil {
 		return entries

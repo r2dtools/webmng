@@ -1,6 +1,7 @@
 package options
 
 import "github.com/r2dtools/webmng/pkg/options"
+import webserverOptions "github.com/r2dtools/webmng/pkg/webserver/options"
 
 const (
 	// HostRoot is apache virtual host root directory
@@ -30,6 +31,12 @@ func GetDefaults() map[string]string {
 	defaults[HostFiles] = "*"
 	defaults[ApacheCtl] = ""
 	defaults[SslVhostlExt] = "-ssl.conf"
+
+	wsOptions := webserverOptions.GetDefaults()
+
+	for key, value := range wsOptions {
+		defaults[key] = value
+	}
 
 	return defaults
 }

@@ -1,6 +1,7 @@
 package options
 
 import "github.com/r2dtools/webmng/pkg/options"
+import webserverOptions "github.com/r2dtools/webmng/pkg/webserver/options"
 
 const (
 	// Nginx root directory
@@ -18,6 +19,12 @@ func GetOptions(params map[string]string) options.Options {
 func GetDefaults() map[string]string {
 	defaults := make(map[string]string)
 	defaults[ServerRoot] = "/etc/nginx"
+
+	wsOptions := webserverOptions.GetDefaults()
+
+	for key, value := range wsOptions {
+		defaults[key] = value
+	}
 
 	return defaults
 }

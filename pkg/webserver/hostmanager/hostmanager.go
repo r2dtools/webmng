@@ -9,6 +9,7 @@ import (
 	"github.com/unknwon/com"
 )
 
+// HostManager enables/disables host by creating/removing symlink for a configuration file
 type HostManager struct {
 	enabledHostConfigDir string
 }

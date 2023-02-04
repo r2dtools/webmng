@@ -1,4 +1,4 @@
-package parser
+package rawparser
 
 import (
 	"os"
@@ -22,6 +22,22 @@ type Block struct {
 
 func (b *Block) GetParametersExpressions() []string {
 	return getExpressions(b.Parameters)
+}
+
+func (b *Block) FindEntriesWithIdentifier(identifier string) []*Entry {
+	entries := []*Entry{}
+
+	if b.Content == nil {
+		return entries
+	}
+
+	for _, entry := range b.Content.Entries {
+		if entry != nil && entry.Identifier == identifier {
+			entries = append(entries, entry)
+		}
+	}
+
+	return entries
 }
 
 type BlockContent struct {
@@ -64,6 +80,16 @@ func (e *Entry) GetValues() []*Value {
 	return values
 }
 
+func (e *Entry) SetValues(expressions []string) {
+	values := []*Value{}
+
+	for _, expression := range expressions {
+		values = append(values, &Value{Expression: expression})
+	}
+
+	e.Values = values
+}
+
 type Config struct {
 	Pos lexer.Position
 
@@ -80,6 +106,8 @@ func (p *RawParser) Parse(configPath string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer configFile.Close()
+
 	config, err := p.participleParser.Parse("", configFile)
 	if err != nil {
 		return nil, err

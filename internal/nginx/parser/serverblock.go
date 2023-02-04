@@ -2,15 +2,18 @@ package parser
 
 import (
 	"strings"
+
+	"github.com/r2dtools/webmng/internal/nginx/rawparser"
 )
 
 type serverBlock struct {
-	block *Block
+	block *rawparser.Block
 }
 
 type listen struct {
 	hostPort string
 	ssl      bool
+	ipv6only bool
 }
 
 func (b serverBlock) getServerNames() []string {
@@ -42,6 +45,7 @@ func (b serverBlock) getListens() []listen {
 	entries := getBlockEntriesByIdentifier(b.block, "listen")
 	sslEntries := getBlockEntriesByIdentifier(b.block, "ssl")
 	serverSsl := false
+	ipv6only := false
 
 	// check first server block directive: ssl "on"
 	for _, sslEntry := range sslEntries {
@@ -59,20 +63,22 @@ func (b serverBlock) getListens() []listen {
 		hostPort := entry.Values[0].Expression
 		ssl := serverSsl
 
-		// check listen directive for "ssl" value
-		// listen 443 ssl http2;
-		if !ssl {
-			for _, value := range entry.GetValues() {
-				if value.Expression == "ssl" {
-					ssl = true
-					break
-				}
+		for _, value := range entry.GetValues() {
+			// check listen directive for "ssl" value
+			// listen 443 ssl http2;
+			if !ssl && value.Expression == "ssl" {
+				ssl = true
+			}
+
+			if value.Expression == "ipv6only=on" {
+				ipv6only = true
 			}
 		}
 
 		listen := listen{
 			hostPort: hostPort,
 			ssl:      ssl,
+			ipv6only: ipv6only,
 		}
 		listens = append(listens, listen)
 	}

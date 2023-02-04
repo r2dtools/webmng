@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/r2dtools/webmng/internal/nginx/parser"
+	"github.com/r2dtools/webmng/internal/nginx/rawparser"
 )
 
 const (
@@ -17,7 +17,7 @@ type RawDumper struct {
 	nestingLevel int
 }
 
-func (d *RawDumper) Dump(config *parser.Config) (string, error) {
+func (d *RawDumper) Dump(config *rawparser.Config) (string, error) {
 	if config == nil {
 		return "", errors.New("config is empty")
 	}
@@ -28,7 +28,7 @@ func (d *RawDumper) Dump(config *parser.Config) (string, error) {
 	return result, nil
 }
 
-func (d *RawDumper) dumpEntries(entries []*parser.Entry) string {
+func (d *RawDumper) dumpEntries(entries []*rawparser.Entry) string {
 	var result string
 
 	for _, entry := range entries {
@@ -40,7 +40,7 @@ func (d *RawDumper) dumpEntries(entries []*parser.Entry) string {
 	return result
 }
 
-func (d *RawDumper) dumpEntry(entry *parser.Entry) string {
+func (d *RawDumper) dumpEntry(entry *rawparser.Entry) string {
 	result := strings.Join(entry.StartNewLines, "")
 
 	if entry.Block != nil {
@@ -52,7 +52,7 @@ func (d *RawDumper) dumpEntry(entry *parser.Entry) string {
 	return result
 }
 
-func (d *RawDumper) dumpBlock(entry *parser.Entry) string {
+func (d *RawDumper) dumpBlock(entry *rawparser.Entry) string {
 	result := d.getCurrentIdent() + entry.Identifier
 	block := entry.Block
 	parameters := strings.Join(block.GetParametersExpressions(), space)
@@ -75,7 +75,7 @@ func (d *RawDumper) dumpBlock(entry *parser.Entry) string {
 	return result
 }
 
-func (d *RawDumper) dumpDirective(entry *parser.Entry) string {
+func (d *RawDumper) dumpDirective(entry *rawparser.Entry) string {
 	expression := strings.Join(entry.GetExpressions(), space)
 
 	return d.getCurrentIdent() + entry.Identifier + space + expression + ";"

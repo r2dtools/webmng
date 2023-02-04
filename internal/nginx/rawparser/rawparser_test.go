@@ -1,4 +1,4 @@
-package parser
+package rawparser
 
 import (
 	"encoding/json"

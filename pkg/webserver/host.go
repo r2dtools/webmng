@@ -35,3 +35,27 @@ func (h *Host) GetAddressesString(hostsOnly bool) string {
 
 	return strings.Join(addresses, " ")
 }
+
+func (h *Host) IsIpv6Enabled() bool {
+	for _, address := range h.Addresses {
+		if address.IsIpv6 {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (h *Host) IsIpv4Enabled() bool {
+	if len(h.Addresses) == 0 {
+		return true
+	}
+
+	for _, address := range h.Addresses {
+		if !address.IsIpv6 {
+			return true
+		}
+	}
+
+	return false
+}
