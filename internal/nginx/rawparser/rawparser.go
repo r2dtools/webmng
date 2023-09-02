@@ -7,71 +7,51 @@ import (
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
-type Value struct {
+type Config struct {
 	Pos lexer.Position
 
-	Expression string `@Expression | @String | @StringSingleQuoted`
-}
-
-type Block struct {
-	Pos lexer.Position
-
-	Parameters []*Value      `@@*`
-	Content    *BlockContent `"{" @@ "}"`
-}
-
-func (b *Block) GetParametersExpressions() []string {
-	return getExpressions(b.Parameters)
-}
-
-func (b *Block) FindEntriesWithIdentifier(identifier string) []*Entry {
-	entries := []*Entry{}
-
-	if b.Content == nil {
-		return entries
-	}
-
-	for _, entry := range b.Content.Entries {
-		if entry != nil && entry.Identifier == identifier {
-			entries = append(entries, entry)
-		}
-	}
-
-	return entries
-}
-
-type BlockContent struct {
-	Pos lexer.Position
-
-	Entries     []*Entry `@@*`
-	EndNewLines []string `@NewLine*`
+	Entries []*Entry `@@*`
 }
 
 type Entry struct {
 	Pos lexer.Position
 
-	StartNewLines []string `@NewLine*`
-	Identifier    string   `@Ident`
-	Values        []*Value `( @@+";"`
-	Block         *Block   `| @@)`
+	StartNewLines  []string        `@NewLine*`
+	Comment        *Comment        `( @@`
+	Directive      *Directive      `| @@`
+	BlockDirective *BlockDirective `| @@ )`
+	EndNewLines    []string        `@NewLine*`
 }
 
-func (e *Entry) GetFirstValueStr() string {
-	if len(e.Values) == 0 {
+type Comment struct {
+	Pos lexer.Position
+
+	Value string `@Comment`
+}
+
+type Directive struct {
+	Pos lexer.Position
+
+	Identifier string   `@Ident`
+	Values     []*Value `@@+";"`
+}
+
+func (d *Directive) GetFirstValueStr() string {
+	if len(d.Values) == 0 {
 		return ""
 	}
 
-	return e.Values[0].Expression
+	return d.Values[0].Expression
 }
 
-func (e *Entry) GetExpressions() []string {
-	return getExpressions(e.Values)
+func (d *Directive) GetExpressions() []string {
+	return getExpressions(d.Values)
 }
 
-func (e *Entry) GetValues() []*Value {
+func (d *Directive) GetValues() []*Value {
 	values := []*Value{}
 
-	for _, value := range e.Values {
+	for _, value := range d.Values {
 		if value != nil {
 			values = append(values, value)
 		}
@@ -80,21 +60,72 @@ func (e *Entry) GetValues() []*Value {
 	return values
 }
 
-func (e *Entry) SetValues(expressions []string) {
+func (d *Directive) SetValues(expressions []string) {
 	values := []*Value{}
 
 	for _, expression := range expressions {
 		values = append(values, &Value{Expression: expression})
 	}
 
-	e.Values = values
+	d.Values = values
 }
 
-type Config struct {
+type BlockDirective struct {
 	Pos lexer.Position
 
-	Entries     []*Entry `@@*`
-	EndNewLines []string `@NewLine*`
+	Identifier string        `@Ident`
+	Parameters []*Value      `@@*`
+	Content    *BlockContent `"{" @@ "}"`
+}
+
+func (b *BlockDirective) GetEntries() []*Entry {
+	entries := make([]*Entry, 0)
+
+	if b.Content == nil {
+		return entries
+	}
+
+	return b.Content.Entries
+}
+
+func (b *BlockDirective) FindEntriesWithIdentifier(identifier string) []*Entry {
+	entries := []*Entry{}
+
+	for _, entry := range b.GetEntries() {
+		if entry != nil && entry.GetIdentifier() == identifier {
+			entries = append(entries, entry)
+		}
+	}
+
+	return entries
+}
+
+func (b *BlockDirective) GetParametersExpressions() []string {
+	return getExpressions(b.Parameters)
+}
+
+type BlockContent struct {
+	Pos lexer.Position
+
+	Entries []*Entry `@@*`
+}
+
+type Value struct {
+	Pos lexer.Position
+
+	Expression string `@Expression | @String | @StringSingleQuoted`
+}
+
+func (e *Entry) GetIdentifier() string {
+	if e.Directive != nil {
+		return e.Directive.Identifier
+	}
+
+	if e.BlockDirective != nil {
+		return e.BlockDirective.Identifier
+	}
+
+	return ""
 }
 
 type RawParser struct {
@@ -121,20 +152,20 @@ func GetRawParser() (*RawParser, error) {
 		"Root": {
 			{`NewLine`, `[\r\n]+`, nil},
 			{`whitespace`, `[^\S\r\n]+`, nil},
-			{`comment`, `#.*`, nil},
+			{`Comment`, `(?:#)[^\n]*\n?`, nil},
 			{"BlockEnd", `}`, nil},
 			{`Ident`, `\w+`, lexer.Push("IdentParse")},
 		},
 		"IdentParse": {
 			{`NewLine`, `[\r\n]+`, nil},
 			{`whitespace`, `[^\S\r\n]+`, nil},
-			{`comment`, `#.*`, nil},
 			{`String`, `"[^"]*"`, nil},
 			{`StringSingleQuoted`, `'[^']*'`, nil},
 			{"Semicolon", `;`, lexer.Pop()},
 			{"BlockStart", `{`, lexer.Pop()},
 			{"BlockEnd", `}`, lexer.Pop()},
 			{"Expression", `[^;{}#\s]+`, nil},
+			{`Comment`, `(?:#)[^\n]*\n?`, nil},
 		},
 	})
 

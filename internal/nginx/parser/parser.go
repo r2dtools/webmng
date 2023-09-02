@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -21,6 +22,8 @@ import (
 var includeDirective = "include"
 var repeatableDirectives = []string{"server_name", "listen", includeDirective, "rewrite", "add_header"}
 
+var errInvalidDirective = errors.New("entry is not a directive")
+
 type Parser struct {
 	rawParser   *rawparser.RawParser
 	dumper      dumper.RawDumper
@@ -33,14 +36,14 @@ type Parser struct {
 
 type NginxHost struct {
 	webserver.Host
-	listens          []listen
-	serverBlockIndex int
+	Listens          []Listen
+	ServerBlockIndex int
 	Offset           int
 }
 
 func (h NginxHost) IsIpv6Only() bool {
-	for _, listen := range h.listens {
-		if listen.ipv6only {
+	for _, listen := range h.Listens {
+		if listen.Ipv6only {
 			return true
 		}
 	}
@@ -77,9 +80,9 @@ func (p *Parser) GetHosts() ([]NginxHost, error) {
 		ssl := false
 
 		for _, listen := range listens {
-			address := host.CreateHostAddressFromString(listen.hostPort)
+			address := host.CreateHostAddressFromString(listen.HostPort)
 			addresses[address.GetHash()] = address
-			if listen.ssl {
+			if listen.Ssl {
 				ssl = true
 			}
 
@@ -95,8 +98,9 @@ func (p *Parser) GetHosts() ([]NginxHost, error) {
 				Ssl:        ssl,
 				Enabled:    true, // only enabled hosts are parsed for now
 			},
+			Listens:          listens,
 			Offset:           serverBlock.block.Pos.Offset,
-			serverBlockIndex: index,
+			ServerBlockIndex: index,
 		}
 		hosts = append(hosts, host)
 	}
@@ -164,7 +168,7 @@ func (p *Parser) UpdateOrAddServerDirectives(host *NginxHost, directives []*Ngin
 	return p.updateOrAddBlockDirectives(serverBlock.block, directives, insertAtTop)
 }
 
-func (p *Parser) addBlockDirectives(block *rawparser.Block, directives []*NginxDirective, insertAtTop bool) error {
+func (p *Parser) addBlockDirectives(block *rawparser.BlockDirective, directives []*NginxDirective, insertAtTop bool) error {
 	for _, directive := range directives {
 		if err := p.addBlockDirective(block, directive, insertAtTop); err != nil {
 			return err
@@ -176,11 +180,11 @@ func (p *Parser) addBlockDirectives(block *rawparser.Block, directives []*NginxD
 	return nil
 }
 
-func (p *Parser) addBlockDirective(block *rawparser.Block, directive *NginxDirective, insertAtTop bool) error {
-	existedEntries := block.FindEntriesWithIdentifier(directive.Name)
+func (p *Parser) addBlockDirective(blockDirective *rawparser.BlockDirective, directive *NginxDirective, insertAtTop bool) error {
+	existedEntries := blockDirective.FindEntriesWithIdentifier(directive.Name)
 
 	if len(existedEntries) == 0 || slices.Contains(repeatableDirectives, directive.Name) {
-		if block.Content == nil {
+		if blockDirective.Content == nil {
 			return fmt.Errorf("unable to add directive: block content is nil")
 		}
 
@@ -191,8 +195,10 @@ func (p *Parser) addBlockDirective(block *rawparser.Block, directive *NginxDirec
 		}
 
 		entry := rawparser.Entry{
-			Identifier: directive.Name,
-			Values:     entryValues,
+			Directive: &rawparser.Directive{
+				Identifier: directive.Name,
+				Values:     entryValues,
+			},
 		}
 
 		if directive.NewLineBefore {
@@ -200,18 +206,21 @@ func (p *Parser) addBlockDirective(block *rawparser.Block, directive *NginxDirec
 		}
 
 		if insertAtTop {
-			block.Content.Entries = append([]*rawparser.Entry{&entry}, block.Content.Entries...)
+			blockDirective.Content.Entries = append([]*rawparser.Entry{&entry}, blockDirective.Content.Entries...)
 		} else {
-			block.Content.Entries = append(block.Content.Entries, &entry)
+			blockDirective.Content.Entries = append(blockDirective.Content.Entries, &entry)
 		}
 
 		return nil
 	}
 
 	for _, entry := range existedEntries {
-		values := entry.GetExpressions()
+		if entry == nil || entry.Directive == nil {
+			return errInvalidDirective
+		}
+		values := entry.Directive.GetExpressions()
 
-		if entry.Identifier == directive.Name && !reflect.DeepEqual(values, directive.Values) {
+		if entry.GetIdentifier() == directive.Name && !reflect.DeepEqual(values, directive.Values) {
 			return fmt.Errorf("unable to add directive %s: conflict %v:%v", directive.Name, values, directive.Values)
 		}
 	}
@@ -219,7 +228,7 @@ func (p *Parser) addBlockDirective(block *rawparser.Block, directive *NginxDirec
 	return nil
 }
 
-func (p *Parser) updateOrAddBlockDirectives(block *rawparser.Block, directives []*NginxDirective, insertAtTop bool) error {
+func (p *Parser) updateOrAddBlockDirectives(block *rawparser.BlockDirective, directives []*NginxDirective, insertAtTop bool) error {
 	for _, directive := range directives {
 		if err := p.updateOrAddBlockDirective(block, directive, insertAtTop); err != nil {
 			return err
@@ -231,15 +240,19 @@ func (p *Parser) updateOrAddBlockDirectives(block *rawparser.Block, directives [
 	return nil
 }
 
-func (p *Parser) updateOrAddBlockDirective(block *rawparser.Block, directive *NginxDirective, insertAtTop bool) error {
-	existedEntries := block.FindEntriesWithIdentifier(directive.Name)
+func (p *Parser) updateOrAddBlockDirective(blockDirective *rawparser.BlockDirective, directive *NginxDirective, insertAtTop bool) error {
+	existedEntries := blockDirective.FindEntriesWithIdentifier(directive.Name)
 
 	if len(existedEntries) == 0 {
-		return p.addBlockDirective(block, directive, insertAtTop)
+		return p.addBlockDirective(blockDirective, directive, insertAtTop)
 	}
 
 	for _, exexistedEntry := range existedEntries {
-		exexistedEntry.SetValues(directive.Values)
+		if exexistedEntry.Directive == nil {
+			return errInvalidDirective
+		}
+
+		exexistedEntry.Directive.SetValues(directive.Values)
 	}
 
 	return nil
@@ -254,10 +267,14 @@ func (p *Parser) parseRecursively(configFilePath string) error {
 
 	for _, tree := range trees {
 		for _, entry := range tree.Entries {
-			identifier := strings.ToLower(entry.Identifier)
+			identifier := strings.ToLower(entry.GetIdentifier())
 			// Parse the top-level included file
 			if identifier == "include" {
-				includeFile := entry.GetFirstValueStr()
+				if entry.Directive == nil {
+					return errInvalidDirective
+				}
+
+				includeFile := entry.Directive.GetFirstValueStr()
 				if includeFile != "" {
 					p.parseRecursively(includeFile)
 				}
@@ -266,14 +283,18 @@ func (p *Parser) parseRecursively(configFilePath string) error {
 
 			// Look for includes in the top-level 'http'/'server' context
 			if identifier == "http" || identifier == "server" {
-				if entry.Block == nil || entry.Block.Content == nil {
+				if entry.BlockDirective == nil {
 					continue
 				}
 
-				for _, subEntry := range entry.Block.Content.Entries {
-					subIdentifier := strings.ToLower(subEntry.Identifier)
+				for _, subEntry := range entry.BlockDirective.GetEntries() {
+					subIdentifier := strings.ToLower(subEntry.GetIdentifier())
 					if subIdentifier == "include" {
-						includeFile := subEntry.GetFirstValueStr()
+						if subEntry.Directive == nil {
+							return errInvalidDirective
+						}
+
+						includeFile := subEntry.Directive.GetFirstValueStr()
 						if includeFile != "" {
 							p.parseRecursively(includeFile)
 						}
@@ -282,13 +303,17 @@ func (p *Parser) parseRecursively(configFilePath string) error {
 
 					// Look for includes in a 'server' context within an 'http' context
 					if identifier == "http" && subIdentifier == "server" {
-						if subEntry.Block == nil || subEntry.Block.Content == nil {
+						if subEntry.BlockDirective == nil {
 							continue
 						}
 
-						for _, serverEntry := range subEntry.Block.Content.Entries {
-							if strings.ToLower(serverEntry.Identifier) == "include" {
-								includeFile := serverEntry.GetFirstValueStr()
+						for _, serverEntry := range subEntry.BlockDirective.GetEntries() {
+							if strings.ToLower(serverEntry.GetIdentifier()) == "include" {
+								if serverEntry.Directive == nil {
+									return errInvalidDirective
+								}
+
+								includeFile := serverEntry.Directive.GetFirstValueStr()
 								if includeFile != "" {
 									p.parseRecursively(includeFile)
 								}
@@ -371,23 +396,19 @@ func (p *Parser) getServerBlocks() []serverBlock {
 
 func (p *Parser) getServerBlocksRecursively(entry *rawparser.Entry) []serverBlock {
 	var blocks []serverBlock
-	block := entry.Block
+	block := entry.BlockDirective
 	serverBlock := serverBlock{block}
 
 	if block == nil {
 		return blocks
 	}
 
-	if strings.ToLower(entry.Identifier) == "server" {
+	if strings.ToLower(entry.GetIdentifier()) == "server" {
 		blocks = append(blocks, serverBlock)
 		return blocks // server blocks could not be nested
 	}
 
-	if block.Content == nil {
-		return blocks
-	}
-
-	for _, entry := range block.Content.Entries {
+	for _, entry := range block.GetEntries() {
 		blocks = append(blocks, p.getServerBlocksRecursively(entry)...)
 	}
 
@@ -396,7 +417,7 @@ func (p *Parser) getServerBlocksRecursively(entry *rawparser.Entry) []serverBloc
 
 func (p *Parser) getHostServerBlock(host *NginxHost) (serverBlock, error) {
 	filename := host.FilePath
-	sBlock, ok := p.findServerBlockByIndex(host.serverBlockIndex)
+	sBlock, ok := p.findServerBlockByIndex(host.ServerBlockIndex)
 
 	if !ok {
 		return serverBlock{}, fmt.Errorf("unable to find server block for host %s in %s", host.ServerName, filename)

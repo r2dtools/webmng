@@ -8,9 +8,8 @@ import (
 )
 
 const (
-	tab     = "\t"
-	space   = " "
-	newLine = "\n"
+	tab   = "    "
+	space = " "
 )
 
 type RawDumper struct {
@@ -23,7 +22,6 @@ func (d *RawDumper) Dump(config *rawparser.Config) (string, error) {
 	}
 
 	result := d.dumpEntries(config.Entries)
-	result += strings.Join(config.EndNewLines, "")
 
 	return result, nil
 }
@@ -33,7 +31,9 @@ func (d *RawDumper) dumpEntries(entries []*rawparser.Entry) string {
 
 	for _, entry := range entries {
 		if entry != nil {
+			result += strings.Join(entry.StartNewLines, "")
 			result += d.dumpEntry(entry)
+			result += strings.Join(entry.EndNewLines, "")
 		}
 	}
 
@@ -41,21 +41,23 @@ func (d *RawDumper) dumpEntries(entries []*rawparser.Entry) string {
 }
 
 func (d *RawDumper) dumpEntry(entry *rawparser.Entry) string {
-	result := strings.Join(entry.StartNewLines, "")
+	result := ""
 
-	if entry.Block != nil {
-		result += d.dumpBlock(entry)
-	} else {
+	if entry.BlockDirective != nil {
+		result += d.dumpBlockDirective(entry)
+	} else if entry.Directive != nil {
 		result += d.dumpDirective(entry)
+	} else if entry.Comment != nil {
+		result += d.dumpComment(entry)
 	}
 
 	return result
 }
 
-func (d *RawDumper) dumpBlock(entry *rawparser.Entry) string {
-	result := d.getCurrentIdent() + entry.Identifier
-	block := entry.Block
-	parameters := strings.Join(block.GetParametersExpressions(), space)
+func (d *RawDumper) dumpBlockDirective(entry *rawparser.Entry) string {
+	result := d.getCurrentIdent() + entry.GetIdentifier()
+	blockDirective := entry.BlockDirective
+	parameters := strings.Join(blockDirective.GetParametersExpressions(), space)
 
 	if parameters != "" {
 		result += space + parameters
@@ -63,10 +65,9 @@ func (d *RawDumper) dumpBlock(entry *rawparser.Entry) string {
 
 	result += space + "{"
 
-	if block.Content != nil {
+	if blockDirective.Content != nil {
 		d.increaseNestingLevel()
-		result += d.dumpEntries(block.Content.Entries)
-		result += strings.Join(block.Content.EndNewLines, "")
+		result += d.dumpEntries(blockDirective.GetEntries())
 		d.decreaseNestingLevel()
 	}
 
@@ -76,9 +77,13 @@ func (d *RawDumper) dumpBlock(entry *rawparser.Entry) string {
 }
 
 func (d *RawDumper) dumpDirective(entry *rawparser.Entry) string {
-	expression := strings.Join(entry.GetExpressions(), space)
+	expression := strings.Join(entry.Directive.GetExpressions(), space)
 
-	return d.getCurrentIdent() + entry.Identifier + space + expression + ";"
+	return d.getCurrentIdent() + entry.GetIdentifier() + space + expression + ";"
+}
+
+func (d *RawDumper) dumpComment(entry *rawparser.Entry) string {
+	return d.getCurrentIdent() + entry.Comment.Value
 }
 
 func (d *RawDumper) getCurrentIdent() string {

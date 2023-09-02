@@ -9,7 +9,7 @@ import (
 
 func TestGetBaseDirectives(t *testing.T) {
 	type testData struct {
-		block               *rawparser.Block
+		blockDirective      *rawparser.BlockDirective
 		expectedServerNames []string
 	}
 
@@ -19,32 +19,36 @@ func TestGetBaseDirectives(t *testing.T) {
 
 	items := []testData{
 		{
-			block:               nil,
+			blockDirective:      nil,
 			expectedServerNames: []string{},
 		},
 		{
-			block:               &rawparser.Block{Content: nil},
+			blockDirective:      &rawparser.BlockDirective{Content: nil},
 			expectedServerNames: []string{},
 		},
 		{
-			block:               &rawparser.Block{Content: &rawparser.BlockContent{}},
+			blockDirective:      &rawparser.BlockDirective{Content: &rawparser.BlockContent{}},
 			expectedServerNames: []string{},
 		},
 		{
-			block: &rawparser.Block{
+			blockDirective: &rawparser.BlockDirective{
 				Content: &rawparser.BlockContent{
 					Entries: []*rawparser.Entry{
 						nil,
 						{
-							Identifier: "server_name",
-							Values: []*rawparser.Value{
-								{Expression: serverName},
-								{Expression: serverAlias},
+							Directive: &rawparser.Directive{
+								Identifier: "server_name",
+								Values: []*rawparser.Value{
+									{Expression: serverName},
+									{Expression: serverAlias},
+								},
 							},
 						},
 						{
-							Identifier: "fake",
-							Values:     nil,
+							Directive: &rawparser.Directive{
+								Identifier: "fake",
+								Values:     nil,
+							},
 						},
 					},
 				},
@@ -54,18 +58,20 @@ func TestGetBaseDirectives(t *testing.T) {
 	}
 
 	for _, item := range items {
-		serverBlock := serverBlock{item.block}
+		serverBlock := serverBlock{item.blockDirective}
 		assert.ElementsMatch(t, item.expectedServerNames, serverBlock.getServerNames(), "invalid server names received")
 	}
 
-	docRootBlock := &rawparser.Block{
+	docRootBlock := &rawparser.BlockDirective{
 		Content: &rawparser.BlockContent{
 			Entries: []*rawparser.Entry{
 				nil,
 				{
-					Identifier: "root",
-					Values: []*rawparser.Value{
-						{Expression: docRoot},
+					Directive: &rawparser.Directive{
+						Identifier: "root",
+						Values: []*rawparser.Value{
+							{Expression: docRoot},
+						},
 					},
 				},
 			},
@@ -77,108 +83,122 @@ func TestGetBaseDirectives(t *testing.T) {
 
 func TestGetListens(t *testing.T) {
 	type testData struct {
-		block    *rawparser.Block
-		expected []listen
+		block    *rawparser.BlockDirective
+		expected []Listen
 	}
 
 	items := []testData{
 		{
-			block: &rawparser.Block{
+			block: &rawparser.BlockDirective{
 				Content: &rawparser.BlockContent{
 					Entries: []*rawparser.Entry{
 						{
-							Identifier: "ssl",
-							Values: []*rawparser.Value{
-								{Expression: "on"},
+							Directive: &rawparser.Directive{
+								Identifier: "ssl",
+								Values: []*rawparser.Value{
+									{Expression: "on"},
+								},
 							},
 						},
 						{
-							Identifier: "listen",
-							Values: []*rawparser.Value{
-								{Expression: "8443"},
+							Directive: &rawparser.Directive{
+								Identifier: "listen",
+								Values: []*rawparser.Value{
+									{Expression: "8443"},
+								},
 							},
 						},
 						{
-							Identifier: "listen",
-							Values: []*rawparser.Value{
-								{Expression: "[::]:8443"},
+							Directive: &rawparser.Directive{
+								Identifier: "listen",
+								Values: []*rawparser.Value{
+									{Expression: "[::]:8443"},
+								},
 							},
 						},
 					},
 				},
 			},
-			expected: []listen{
+			expected: []Listen{
 				{
-					hostPort: "8443",
-					ssl:      true,
+					HostPort: "8443",
+					Ssl:      true,
 				},
 				{
-					hostPort: "[::]:8443",
-					ssl:      true,
+					HostPort: "[::]:8443",
+					Ssl:      true,
 				},
 			},
 		},
 		{
-			block: &rawparser.Block{
+			block: &rawparser.BlockDirective{
 				Content: &rawparser.BlockContent{
 					Entries: []*rawparser.Entry{
 						{
-							Identifier: "listen",
-							Values: []*rawparser.Value{
-								{Expression: "443"},
-								{Expression: "ssl"},
-								{Expression: "http2"},
+							Directive: &rawparser.Directive{
+								Identifier: "listen",
+								Values: []*rawparser.Value{
+									{Expression: "443"},
+									{Expression: "ssl"},
+									{Expression: "http2"},
+								},
 							},
 						},
 						{
-							Identifier: "listen",
-							Values: []*rawparser.Value{
-								{Expression: "[::]:443"},
-								{Expression: "ssl"},
-								{Expression: "http2"},
+							Directive: &rawparser.Directive{
+								Identifier: "listen",
+								Values: []*rawparser.Value{
+									{Expression: "[::]:443"},
+									{Expression: "ssl"},
+									{Expression: "http2"},
+								},
 							},
 						},
 					},
 				},
 			},
-			expected: []listen{
+			expected: []Listen{
 				{
-					hostPort: "443",
-					ssl:      true,
+					HostPort: "443",
+					Ssl:      true,
 				},
 				{
-					hostPort: "[::]:443",
-					ssl:      true,
+					HostPort: "[::]:443",
+					Ssl:      true,
 				},
 			},
 		},
 		{
-			block: &rawparser.Block{
+			block: &rawparser.BlockDirective{
 				Content: &rawparser.BlockContent{
 					Entries: []*rawparser.Entry{
 						{
-							Identifier: "listen",
-							Values: []*rawparser.Value{
-								{Expression: "80"},
+							Directive: &rawparser.Directive{
+								Identifier: "listen",
+								Values: []*rawparser.Value{
+									{Expression: "80"},
+								},
 							},
 						},
 						{
-							Identifier: "listen",
-							Values: []*rawparser.Value{
-								{Expression: "[::]:80"},
+							Directive: &rawparser.Directive{
+								Identifier: "listen",
+								Values: []*rawparser.Value{
+									{Expression: "[::]:80"},
+								},
 							},
 						},
 					},
 				},
 			},
-			expected: []listen{
+			expected: []Listen{
 				{
-					hostPort: "80",
-					ssl:      false,
+					HostPort: "80",
+					Ssl:      false,
 				},
 				{
-					hostPort: "[::]:80",
-					ssl:      false,
+					HostPort: "[::]:80",
+					Ssl:      false,
 				},
 			},
 		},
