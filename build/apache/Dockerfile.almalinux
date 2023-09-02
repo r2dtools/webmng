@@ -1,6 +1,6 @@
 FROM golang:1.18 AS golang
 
-FROM almalinux:latest
+FROM almalinux:8.8
 
 COPY --from=golang /usr/local/go/ /usr/local/go/
 ENV PATH="/usr/local/go/bin:${PATH}"

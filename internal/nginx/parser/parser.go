@@ -55,6 +55,7 @@ type NginxDirective struct {
 	Name          string
 	Values        []string
 	NewLineBefore bool
+	NewLineAfter  bool
 }
 
 func (d *NginxDirective) AddValues(values ...string) {
@@ -203,6 +204,10 @@ func (p *Parser) addBlockDirective(blockDirective *rawparser.BlockDirective, dir
 
 		if directive.NewLineBefore {
 			entry.StartNewLines = []string{"\n"}
+		}
+
+		if directive.NewLineAfter {
+			entry.EndNewLines = []string{"\n"}
 		}
 
 		if insertAtTop {

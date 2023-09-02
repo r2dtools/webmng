@@ -149,6 +149,7 @@ func (m *NginxManager) makeSslHost(host *parser.NginxHost, certPath, certKeyPath
 			Name:          "ssl_certificate",
 			Values:        []string{fullChainPath},
 			NewLineBefore: true,
+			NewLineAfter:  true,
 		},
 	}
 
@@ -172,6 +173,7 @@ func (m *NginxManager) deployCertificateToHost(host *parser.NginxHost, certPath,
 			Name:          "ssl_certificate",
 			Values:        []string{fullChainPath},
 			NewLineBefore: true,
+			NewLineAfter:  true,
 		},
 	}
 
