@@ -70,6 +70,10 @@ func (m *NginxManager) DeployCertificate(serverName, certPath, certKeyPath, chai
 		return errors.New("nginx requires fullchain-path to deploy a certificate")
 	}
 
+	if certKeyPath == "" {
+		return errors.New("nginx requires cert key path to deploy a certificate")
+	}
+
 	hosts, err := m.getNginxHostsByServerName(serverName)
 	if err != nil {
 		return err
@@ -81,12 +85,12 @@ func (m *NginxManager) DeployCertificate(serverName, certPath, certKeyPath, chai
 
 	for _, host := range hosts {
 		if !host.Ssl {
-			if err := m.makeSslHost(&host, certPath, certKeyPath, chainPath, fullChainPath); err != nil {
+			if err := m.makeSslHost(&host, certKeyPath, fullChainPath); err != nil {
 				return err
 			}
 		}
 
-		if err = m.deployCertificateToHost(&host, certPath, certKeyPath, chainPath, fullChainPath); err != nil {
+		if err = m.deployCertificateToHost(&host, certKeyPath, fullChainPath); err != nil {
 			return err
 		}
 	}
@@ -94,7 +98,7 @@ func (m *NginxManager) DeployCertificate(serverName, certPath, certKeyPath, chai
 	return nil
 }
 
-func (m *NginxManager) makeSslHost(host *parser.NginxHost, certPath, certKeyPath, chainPath, fullChainPath string) error {
+func (m *NginxManager) makeSslHost(host *parser.NginxHost, certKeyPath, fullChainPath string) error {
 	httpsPort := m.options.Get(webserverOptions.HttpsPort)
 
 	ipv6Info, err := m.getIpv6Info(httpsPort)
@@ -162,7 +166,7 @@ func (m *NginxManager) makeSslHost(host *parser.NginxHost, certPath, certKeyPath
 	return nil
 }
 
-func (m *NginxManager) deployCertificateToHost(host *parser.NginxHost, certPath, certKeyPath, chainPath, fullChainPath string) error {
+func (m *NginxManager) deployCertificateToHost(host *parser.NginxHost, certKeyPath, fullChainPath string) error {
 	certDirectives := []*parser.NginxDirective{
 		{
 			Name:          "ssl_certificate_key",
